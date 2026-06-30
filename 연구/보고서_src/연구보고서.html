@@ -1,0 +1,854 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<style>
+@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css');
+:root{
+  --navy:#0f1d3d; --navy2:#1b2e5a; --sky:#2b86c4; --sky2:#3aa0e0; --skytint:#eaf4fb;
+  --mint:#2fc89b; --amber:#f5b53d; --violet:#7c5cf0; --rose:#e0506a;
+  --ink:#1c2840; --mut:#6b7a96; --line:#e3e9f2; --soft:#f6f9fd;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+body{font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;color:var(--ink);line-height:1.68;font-size:10.3pt;letter-spacing:-.01em}
+@page{size:A4;margin:16mm 15mm 15mm 15mm}
+@page:first{margin:0}
+h2.sec{font-size:18pt;font-weight:800;letter-spacing:-.03em;color:var(--navy);display:flex;align-items:center;gap:11px;margin:0 0 3px}
+h2.sec .num{flex:none;min-width:34px;height:34px;padding:0 8px;border-radius:10px;background:linear-gradient(135deg,var(--navy),var(--navy2));color:#fff;font-size:12.5pt;display:flex;align-items:center;justify-content:center;font-weight:800}
+.sec-line{height:3px;border-radius:3px;background:linear-gradient(90deg,var(--sky),transparent);margin:8px 0 16px}
+h3{font-size:12pt;font-weight:800;color:var(--navy2);margin:17px 0 7px;padding-left:10px;border-left:4px solid var(--sky);letter-spacing:-.02em}
+h4{font-size:10.6pt;font-weight:800;color:var(--navy2);margin:12px 0 5px}
+p{margin:6px 0;color:#28344e}
+.lead{font-size:10.6pt;color:#33425f}
+strong,b{font-weight:700;color:var(--navy2)}
+.pbreak{page-break-before:always}
+.keep{page-break-inside:avoid}
+sup{font-size:.7em;color:var(--sky);font-weight:700}
+
+/* 표지 */
+.cover{position:relative;width:210mm;height:297mm;background:linear-gradient(150deg,#0c1830,#13264d 45%,#1d3a6b);color:#fff;overflow:hidden;page-break-after:always;display:flex;flex-direction:column;justify-content:center;padding:0 24mm}
+.cover .glow{position:absolute;border-radius:50%;pointer-events:none}
+.cover .g1{width:330px;height:330px;right:-90px;top:-70px;background:radial-gradient(circle,rgba(58,160,224,.5),transparent 68%)}
+.cover .g2{width:280px;height:280px;left:-110px;bottom:30px;background:radial-gradient(circle,rgba(47,200,155,.32),transparent 70%)}
+.cover .floatbk{position:absolute;opacity:.15;font-size:50px}
+.cover .toptag{position:absolute;top:30mm;left:24mm;font-size:12pt;font-weight:600;letter-spacing:.06em;opacity:.95;border-left:3px solid #43e0b0;padding-left:12px}
+.cover .mark{width:70px;height:70px;border-radius:19px;background:linear-gradient(135deg,#3aa0e0,#2b86c4);display:flex;align-items:center;justify-content:center;font-size:38px;box-shadow:0 14px 34px rgba(0,0,0,.34);margin-bottom:26px}
+.cover h1{font-size:46pt;font-weight:800;letter-spacing:-.04em;line-height:1.06}
+.cover h1 .accent{background:linear-gradient(92deg,#5bc0f0,#43e0b0);-webkit-background-clip:text;background-clip:text;color:transparent}
+.cover .sub{font-size:14pt;font-weight:500;opacity:.92;margin-top:16px;line-height:1.5;max-width:150mm}
+.cover .rule{width:60px;height:5px;border-radius:3px;background:linear-gradient(90deg,#3aa0e0,#2fc89b);margin:26px 0}
+.cover .infobox{position:absolute;left:24mm;right:24mm;bottom:26mm;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.2);border-radius:14px;padding:16px 20px;backdrop-filter:blur(4px)}
+.cover .infobox table{width:100%;font-size:10.5pt;border-collapse:collapse}
+.cover .infobox td{padding:5px 8px;vertical-align:top}
+.cover .infobox td.k{color:#9fd3ee;font-weight:700;width:90px;white-space:nowrap}
+.cover .infobox tr+tr td{border-top:1px solid rgba(255,255,255,.13)}
+
+/* 표 */
+.tbl{width:100%;border-collapse:collapse;margin:11px 0;font-size:9.6pt;border-radius:10px;overflow:hidden;box-shadow:0 2px 9px rgba(15,29,61,.06);border:1px solid var(--line)}
+.tbl th{background:var(--navy);color:#fff;font-weight:700;text-align:left;padding:9px 12px}
+.tbl td{padding:8px 12px;border-top:1px solid var(--line);vertical-align:top;color:#2b3850}
+.tbl tbody tr:nth-child(even){background:var(--soft)}
+.tbl td:first-child{font-weight:600;color:var(--navy2)}
+.tbl.c td,.tbl.c th{text-align:center}
+.tbl.c td:first-child{text-align:center}
+.tbl .em{color:var(--sky);font-weight:800}
+
+/* 측면 헤더 2단 (수상작 스타일) */
+.need{display:grid;grid-template-columns:118px 1fr;gap:0;margin:10px 0;border:1px solid var(--line);border-radius:11px;overflow:hidden}
+.need .lab{background:var(--skytint);color:var(--navy);font-weight:800;font-size:9.8pt;padding:11px 12px;display:flex;align-items:center;line-height:1.35;border-right:1px solid var(--line)}
+.need .body{padding:11px 14px;font-size:9.9pt;color:#2b3850}
+.need+.need{margin-top:7px}
+
+/* 콜아웃 */
+.call{border-radius:12px;padding:13px 16px;margin:13px 0;font-size:9.8pt;page-break-inside:avoid}
+.call b.h{display:block;font-size:10.2pt;margin-bottom:3px}
+.call.key{background:linear-gradient(135deg,#eef6fb,#f0fdf7);border:1px solid #cfe6f5}.call.key b.h{color:var(--sky)}
+.call.point{background:#fffaf0;border:1px solid #f3e0b5}.call.point b.h{color:#b4791a}
+.call.diff{background:#f3f0ff;border:1px solid #ddd3f7}.call.diff b.h{color:var(--violet)}
+.call.warn{background:#fff5f5;border:1px solid #f3cdcd}.call.warn b.h{color:var(--rose)}
+
+/* 카드 */
+.cards{display:grid;grid-template-columns:1fr 1fr;gap:11px;margin:12px 0}
+.fcard{border:1px solid var(--line);border-radius:12px;padding:13px 14px;background:#fff;box-shadow:0 2px 8px rgba(15,29,61,.05);page-break-inside:avoid}
+.fcard .ic{font-size:18px}
+.fcard .t{font-weight:800;color:var(--navy);font-size:10.4pt;margin:5px 0 2px}
+.fcard .d{font-size:9.2pt;color:var(--mut);line-height:1.5}
+
+/* 통계 */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:14px 0}
+.stbox{border:1px solid var(--line);border-radius:12px;padding:13px 9px;text-align:center;background:#fff;position:relative;overflow:hidden}
+.stbox::before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:var(--ac,var(--sky))}
+.stbox .n{font-size:19pt;font-weight:800;color:var(--navy);letter-spacing:-.02em;line-height:1}
+.stbox .l{font-size:8.4pt;color:var(--mut);margin-top:4px;font-weight:600}
+
+/* 스크린샷 */
+.shotwrap{margin:12px 0;page-break-inside:avoid}
+.shot{width:100%;border:1px solid var(--line);border-radius:11px;box-shadow:0 7px 20px rgba(15,29,61,.13);display:block}
+.cap{font-size:8.6pt;color:var(--mut);text-align:center;margin-top:6px;font-weight:600}
+.shotgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.shot3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:9px}
+.shot3 img{width:100%;border:1px solid var(--line);border-radius:9px;box-shadow:0 4px 12px rgba(15,29,61,.1)}
+
+/* 기능 표 (활용방법) */
+.fn{border:1px solid var(--line);border-radius:12px;overflow:hidden;margin:11px 0;page-break-inside:avoid}
+.fn .head{background:var(--navy);color:#fff;padding:8px 13px;font-weight:800;font-size:10.4pt;display:flex;align-items:center;gap:7px}
+.fn .grid2{display:grid;grid-template-columns:1fr 1fr}
+.fn .cell{padding:10px 13px;font-size:9.3pt}
+.fn .cell.l{border-right:1px solid var(--line);background:#fbfdff}
+.fn .cell .ct{font-weight:800;color:var(--navy2);font-size:9.2pt;margin-bottom:3px}
+.fn ul{margin:0;padding-left:15px}.fn li{margin:2px 0;color:#2b3850}
+
+/* 루브릭 */
+.rubric{display:flex;flex-direction:column;gap:7px;margin:12px 0}
+.rb{display:flex;align-items:center;gap:11px}
+.rb .nm{width:78px;font-weight:700;color:var(--navy2);font-size:9.6pt;flex:none}
+.rb .track{flex:1;height:12px;background:#eef2f8;border-radius:99px;overflow:hidden}
+.rb .fill{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--sky2),var(--mint))}
+.rb .std{flex:none;font-size:8.2pt;color:#fff;background:var(--navy2);padding:2px 7px;border-radius:6px;font-weight:700}
+.rb .ds{flex:none;width:150px;font-size:8.8pt;color:var(--mut)}
+
+/* 흐름도 */
+.flow{display:flex;align-items:stretch;gap:5px;margin:13px 0}
+.fl{flex:1;border-radius:10px;padding:11px 8px;text-align:center;color:#fff;font-size:8.6pt;font-weight:600;display:flex;flex-direction:column;justify-content:center;line-height:1.4}
+.fl .fi{font-size:17px;margin-bottom:3px}.fl b{display:block;font-size:9.2pt;font-weight:800;margin-bottom:2px}
+.farr{display:flex;align-items:center;color:var(--mut);font-size:15px;font-weight:800}
+
+ul.clean{margin:7px 0 7px 2px;list-style:none}
+ul.clean li{position:relative;padding-left:17px;margin:4px 0;font-size:9.9pt;color:#2b3850}
+ul.clean li::before{content:"";position:absolute;left:2px;top:7px;width:7px;height:7px;border-radius:2px;background:var(--sky);transform:rotate(45deg)}
+.fn-note,.foot-note{font-size:8.5pt;color:var(--mut)}
+.ref{font-size:9.3pt;color:#2b3850;margin:5px 0;padding-left:20px;text-indent:-20px;line-height:1.5}
+
+/* 설문지 */
+.qz{border:1px solid var(--line);border-radius:12px;padding:16px 18px;margin:12px 0;background:#fff}
+.qz h4{margin-top:0}
+.qrow{display:flex;justify-content:space-between;gap:10px;padding:7px 0;border-bottom:1px dashed var(--line);font-size:9.5pt}
+.qrow:last-child{border-bottom:none}
+.qopt{color:var(--mut);font-size:8.7pt;white-space:nowrap;flex:none}
+.qsec{font-weight:800;color:var(--sky);font-size:9.4pt;margin:11px 0 3px}
+.toc-row{display:flex;align-items:baseline;font-size:10.4pt;padding:6px 0;border-bottom:1px dotted #d8e0ec}
+.toc-row .ti{flex:1}.toc-row .tn{color:var(--mut);font-weight:700}
+.toc-row.sub{font-size:9.6pt;color:var(--mut);padding:3px 0 3px 18px;border-bottom:none}
+.bracket{display:inline-block;background:var(--navy);color:#fff;border-radius:6px;padding:1px 8px;font-size:9pt;font-weight:700;margin-right:6px}
+/* ===== 인쇄 페이지 분할 정리 ===== */
+h2.sec,h3,h4{break-after:avoid;page-break-after:avoid}
+.call,.need,.fn,.shotwrap,.fcard,.rb,.qrow,.toc-row,.flow,.shotgrid{break-inside:avoid;page-break-inside:avoid}
+.tbl{break-inside:auto}.tbl thead{display:table-header-group}.tbl tr{break-inside:avoid;page-break-inside:avoid}
+.qz{break-inside:auto}
+p,li{orphans:2;widows:2}
+h3+p,h3+.tbl,h3+.need,h4+.fn,h4+.shotwrap{break-before:avoid}
+</style>
+</head>
+<body>
+
+<!-- ===== 표지 ===== -->
+<div class="cover">
+  <div class="glow g1"></div><div class="glow g2"></div>
+  <span class="floatbk" style="right:42px;top:120px">📚</span><span class="floatbk" style="left:28px;top:240px">✏️</span>
+  <span class="floatbk" style="right:120px;bottom:240px">🌱</span><span class="floatbk" style="left:150px;top:96px">🏆</span>
+  <div class="toptag">제20회 정보화연구대회(디지털교육연구대회) 연구보고서</div>
+  <div class="mark">📖</div>
+  <h1><span class="accent">책갈피</span><br>손글씨 독후감을 읽고<br>키워주는 AI 독서 첨삭 플랫폼</h1>
+  <div class="rule"></div>
+  <div class="sub">2022 개정 국어과 성취수준 5축 루브릭 기반 AI 첨삭과<br>손글씨 OCR·교사 검토 워크플로를 결합한 <b style="color:#bfe2f7;font-weight:700">독서활동 종합 플랫폼</b></div>
+  <div class="infobox"><table>
+    <tr><td class="k">출품 분과</td><td>교육용 SW·AI &nbsp;|&nbsp; 적용 교과 : 국어</td></tr>
+    <tr><td class="k">연구 대상</td><td>초등학교 (5~6학년군 중심)</td></tr>
+    <tr><td class="k">개발 형태</td><td>반응형 웹 애플리케이션 · 프로토타입 v0.7</td></tr>
+    <tr><td class="k">제출 구분</td><td>소프트웨어 + 연구보고서 (블라인드)</td></tr>
+  </table></div>
+</div>
+
+<!-- ===== 요약서 ===== -->
+<div class="chapter pbreak">
+  <h2 class="sec"><span class="num">要</span> 연구보고서 요약서</h2>
+  <div class="sec-line"></div>
+  <p style="font-weight:700;color:var(--navy);font-size:11pt">「책갈피」 — 손글씨 독후감을 읽고 키워주는 AI 독서 첨삭 플랫폼</p>
+
+  <h4>1. 연구 배경 및 목적</h4>
+  <ul class="clean">
+    <li>독후감 쓰기는 사고력·표현력을 기르는 핵심 독서활동이나, 교사에게는 큰 <b>첨삭 부담</b>이, 학생에게는 "무엇을 어떻게 쓸지"의 <b>막막함</b>이 따른다.</li>
+    <li>기존 도구는 <b>맞춤법(철자) 교정</b>이나 <b>독서 권장·인증</b>에 머물러, 독후감의 본질인 <b>내용 이해·감상·사고의 확장</b>을 진단·피드백하지 못한다.</li>
+    <li>2022 개정 교육과정은 <b>과정 중심 평가</b>와 <b>디지털 소양</b>을 강조한다. 이에 부응해, 성취수준에 근거한 AI 첨삭과 손글씨 OCR을 결합한 학습 시스템 개발이 요구된다.</li>
+    <li>본 연구의 목적은 <b>성취수준 5축 루브릭 기반 AI 발전적 첨삭</b>, <b>손글씨 OCR 연계</b>, <b>교사 검토·확정 워크플로</b>를 갖춘 독서활동 플랫폼을 개발하고 그 교육적 활용 가능성을 제시하는 데 있다.</li>
+  </ul>
+
+  <h4>2. 소프트웨어 개요</h4>
+  <table class="tbl c"><tbody>
+    <tr><td>출품 분야</td><td>교육용 SW·AI</td><td>운영 환경</td><td>크롬 등 웹 브라우저(PC·태블릿·스마트폰)</td></tr>
+    <tr><td>적용 교과</td><td>국어(독서·쓰기)</td><td>대상 학년</td><td>초등 5~6학년(전 학년 확장 가능)</td></tr>
+    <tr><td>개발 환경</td><td>HTML5·CSS3·JavaScript(무빌드 단일 파일) · 실서비스 배포(Netlify)</td><td>데이터</td><td>로컬 저장 → 서버(Firebase) 연동 설계</td></tr>
+    <tr><td>AI 엔진</td><td>생성형 LLM(첨삭·OCR), 규칙 기반 폴백</td><td>최소 사양</td><td>인터넷 연결, 카메라(사진 입력 시)</td></tr>
+  </tbody></table>
+
+  <h4>3. 소프트웨어 활용 교육 방법과 과정</h4>
+  <div class="cards" style="margin:8px 0">
+    <div class="fcard"><div class="t">① 입력 — 손글씨 OCR·원고지·키보드</div><div class="d">종이 독후감을 사진으로 올리면 AI가 글자로 변환. 원고지·음성 입력도 지원.</div></div>
+    <div class="fcard"><div class="t">② 첨삭 — 5축 루브릭 진단</div><div class="d">내용·감상·삶 연결·구성·맞춤법을 진단하고 칭찬·개선·발전 피드백 제공.</div></div>
+    <div class="fcard"><div class="t">③ 교사 — 검토·확정·원본 열람</div><div class="d">AI 초안 점수를 교사가 조정·확정. 제출 사진 원본을 대조 열람.</div></div>
+    <div class="fcard"><div class="t">④ 성장 — 포인트·칭호·랭킹</div><div class="d">6단계 성장(씨앗→열매)·독서 칭호·학급/전국 랭킹·명예의 전당으로 동기 부여.</div></div>
+  </div>
+
+  <h4>4. 연구 결과(요약)</h4>
+  <p>프로토타입을 구현하고 10개 기능 영역을 통합 검증하였다. 시스템은 <b>고쳐쓰기 향상도·성취수준 분포</b>를 자동 산출하여 효과 검증의 근거 자료를 제공한다. 교실 적용을 위한 <b>검증 설계(성취수준 루브릭·동기 설문·교사 업무경감 설문)</b>를 수립하였다.</p>
+
+  <h4>5. 결론 및 일반화</h4>
+  <p>「책갈피」는 손글씨 OCR·AI 첨삭·교사 확정·동기 부여를 하나의 흐름으로 엮어 <b>교사 평가 부담을 줄이면서 학생의 읽기·쓰기 성장을 가시화</b>한다. 무설치 웹과 <b>키 설정이 필요 없는</b> 설계로 현장 도입 장벽이 낮고, 성취수준 근거 평가로 교육적 타당성을 확보하여 <b>전국 어느 학급에서나 일반화</b>가 용이하다.</p>
+</div>
+
+<!-- ===== 목차 ===== -->
+<div class="chapter pbreak">
+  <h2 class="sec"><span class="num">目</span> 목 차</h2>
+  <div class="sec-line"></div>
+  <div class="toc-row"><span class="ti"><b>Ⅰ. 연구의 배경 및 목적</b></span><span class="tn">01</span></div>
+  <div class="toc-row sub"><span class="ti">1. 연구의 필요성  2. 연구 목적  3. 용어의 정의</span></div>
+  <div class="toc-row"><span class="ti"><b>Ⅱ. 이론적 배경 및 선행 사례 분석</b></span><span class="tn">03</span></div>
+  <div class="toc-row sub"><span class="ti">1. 2022 개정 국어과와 독서·쓰기 교육  2. 과정 중심 평가와 성취수준  3. AI·에듀테크의 교육적 활용  4. 선행 사례 분석</span></div>
+  <div class="toc-row"><span class="ti"><b>Ⅲ. 소프트웨어 개요 및 설계</b></span><span class="tn">06</span></div>
+  <div class="toc-row sub"><span class="ti">1. 개발 환경  2. 시스템 구조  3. 교육과정 분석(성취기준 매핑)  4. 핵심 알고리즘 설계</span></div>
+  <div class="toc-row"><span class="ti"><b>Ⅳ. 소프트웨어 활용 교육 방법과 과정</b></span><span class="tn">09</span></div>
+  <div class="toc-row sub"><span class="ti">1. 구성 체제  2. 기능별 활용 방법(화면·기능·제작 의도)  3. 수업 적용 시나리오</span></div>
+  <div class="toc-row"><span class="ti"><b>Ⅴ. 연구 결과 — 검증 설계 및 산출 지표</b></span><span class="tn">15</span></div>
+  <div class="toc-row sub"><span class="ti">1. 검증 대상 및 방법  2. 검증 도구  3. 시스템 자동 산출 지표</span></div>
+  <div class="toc-row"><span class="ti"><b>Ⅵ. 결론 및 일반화</b></span><span class="tn">18</span></div>
+  <div class="toc-row sub"><span class="ti">1. 결론  2. 일반화 방안  3. 제언</span></div>
+  <div class="toc-row"><span class="ti"><b>참고문헌 · 부록</b></span><span class="tn">20</span></div>
+  <div class="toc-row sub"><span class="ti">[붙임1] 업무분장  [붙임2] 멀티미디어 목록  [붙임3] 성취기준 매핑표  [붙임4~6] 사전·사후·교사 설문지  [붙임7] 개인정보 동의서  [붙임8] 시스템 구성도  [붙임9] 화면 모음  [붙임10] 루브릭 채점 기준표  [붙임11] 하위 기능 명세  [붙임12] AI 첨삭 출력 구조  [붙임13] 교사 빠른 시작 가이드</span></div>
+</div>
+
+<!-- ===== Ⅰ. 배경 및 목적 ===== -->
+<div class="chapter pbreak">
+  <h2 class="sec"><span class="num">Ⅰ</span> 연구의 배경 및 목적</h2>
+  <div class="sec-line"></div>
+
+  <h3>1. 연구의 필요성</h3>
+  <div class="need"><div class="lab">가. 독후감 쓰기의 교육적 가치</div><div class="body">독후감은 텍스트를 자신의 경험·사고와 연결해 재구성하는 활동으로, 읽기·쓰기·사고력을 통합적으로 기른다. 2022 개정 국어과가 강조하는 <b>'한 학기 한 권 읽기'</b>와 과정 중심의 독서·쓰기 지도에서 핵심 산출물이 바로 독후감이다.</div></div>
+  <div class="need"><div class="lab">나. 독후감 지도의 현실적 어려움</div><div class="body">담임교사가 다교과를 지도하는 초등 현장에서 학급 전체의 독후감을 매번 정성껏 첨삭하기는 현실적으로 어렵다. 피드백이 "잘 썼어요" 수준에 그치거나 지연되면, 학생은 <b>무엇을 어떻게 고쳐야 할지</b> 알기 어렵다.<sup>1)</sup></div></div>
+  <div class="need"><div class="lab">다. 기존 도구의 한계</div><div class="body">시판·공공 도구는 <b>맞춤법(철자) 교정</b>에 강점을 두거나(예: 맞춤법 학습 코스웨어), <b>독서 권장·인증</b>에 머문다(예: 시·도 독서교육 종합지원시스템). 즉 독후감의 본질인 <b>내용 이해·감상·삶과의 연결·구성</b>에 대한 발전적 피드백은 비어 있다.</div></div>
+  <div class="need"><div class="lab">라. 2022 개정 교육과정의 요구</div><div class="body">2022 개정 교육과정은 <b>과정 중심 평가</b>와 <b>디지털 소양</b>을 기초 소양으로 제시한다. 결과물 채점을 넘어 <b>고쳐쓰기 과정</b>을 지원하고, 성취수준에 근거해 성장을 가시화하는 디지털 도구가 요구된다.</div></div>
+  <p style="margin-top:8px">요컨대 독후감 교육은 <b>교사의 첨삭 역량과 시간</b>에 크게 의존하지만, 현실의 학급 규모와 업무량은 모든 학생에게 충분한 개별 피드백을 보장하기 어렵다. 학생은 자신의 글이 어디가 좋고 어디를 어떻게 고쳐야 하는지 구체적으로 알기 어려워, 독후감이 형식적인 줄거리 요약에 머무르기 쉽다. 본 연구는 이 구조적 간극을 기술로 메우되, 교사의 전문적 판단을 대체하지 않고 <b>보조</b>하는 방향을 택한다.</p>
+  <p class="foot-note" style="margin-top:8px">1) 한국교육개발원·언론 보도 등에서 초등 문해력 저하와 글쓰기 피드백 공백이 지속적으로 지적되고 있다(참고문헌 참조).</p>
+
+  <h3>2. 연구 목적</h3>
+  <p>본 연구의 목적은 초등 국어과 독서·쓰기 활동에 활용할 수 있는 <b>AI 기반 독서 첨삭 플랫폼 「책갈피」</b>를 개발하는 것이다. 구체적 목표는 다음과 같다.</p>
+  <ul class="clean">
+    <li><b>성취수준 기반 발전적 첨삭</b> — 2022 개정 국어과 성취수준을 5축 루브릭으로 구조화하여, 일반 챗봇식 격려가 아닌 <b>교육과정에 근거한 진단·피드백</b>을 제공한다.</li>
+    <li><b>손글씨 OCR 연계</b> — 종이에 쓴 독후감을 사진으로 디지털화하여, 오프라인 손글씨 쓰기와 디지털 학습을 잇는다.</li>
+    <li><b>교사 검토·확정 워크플로</b> — AI를 보조 도구로 두고 평가의 결정·정서적 격려는 교사가 맡아, <b>업무 경감과 교육적 책임성</b>을 동시에 달성한다.</li>
+    <li><b>동기 부여와 일반화</b> — 포인트·캐릭터·랭킹으로 읽기 동기를 높이고, 무설치 웹으로 전국 어느 학급에서나 적용 가능하게 한다.</li>
+  </ul>
+  <div class="call key"><b class="h">연구 문제</b>
+  ① 성취수준 5축 루브릭 기반 AI 첨삭은 독후감의 <b>내용·사고</b> 측면을 진단·피드백할 수 있는가? &nbsp; ② 손글씨 OCR 연계는 오프라인 쓰기와 디지털 학습을 효과적으로 잇는가? &nbsp; ③ AI 초안–교사 확정 구조는 평가의 신뢰성을 유지하면서 교사 업무를 경감하는가? &nbsp; ④ 성장·랭킹 설계는 학생의 읽기·쓰기 동기를 높이는가?</div>
+
+  <h3>3. 용어의 정의</h3>
+  <table class="tbl"><tbody>
+    <tr><td style="width:130px">성취수준 루브릭</td><td>성취기준 도달 정도를 단계(A·B·C)로 기술한 평가 척도. 본 연구는 독후감을 <b>5개 축</b>(내용 이해·감상 표현·삶과 연결·구성·맞춤법)으로 진단한다.</td></tr>
+    <tr><td>OCR</td><td>광학 문자 인식(Optical Character Recognition). 손글씨·인쇄 글자 이미지를 디지털 텍스트로 변환하는 기술.</td></tr>
+    <tr><td>생성형 LLM</td><td>대규모 언어 모델(Large Language Model). 자연어를 이해·생성하여 첨삭·요약·진단 등에 활용한다.</td></tr>
+    <tr><td>과정 중심 평가</td><td>결과물뿐 아니라 학습의 <b>과정(고쳐쓰기·성장)</b>을 지속적으로 관찰·피드백하는 평가 방식.</td></tr>
+    <tr><td>서버측 AI 호출</td><td>학생이 모델을 직접 호출하지 않고, 서비스에 내장된 <b>운영자 API 키</b>로 서버에서 AI를 호출하는 방식. 연령 제한 약관 문제를 피하고, 교사·학생의 키 설정 부담을 없앤다.</td></tr>
+  </tbody></table>
+
+  <h3>4. 연구의 범위 및 추진 일정</h3>
+  <p>본 연구는 초등 5~6학년 국어과 독서·쓰기 활동을 범위로 하며, 프로토타입 개발과 교육적 활용 설계에 중점을 둔다. 대규모 효과성 검증은 후속 적용 연구의 과제로 둔다.</p>
+  <table class="tbl c"><thead><tr><th style="width:120px">단계</th><th style="width:110px">기간</th><th>주요 내용</th></tr></thead><tbody>
+    <tr><td>분석·설계</td><td>1~2개월</td><td>대회·선행 사례 분석, 교육과정 성취기준 매핑, 기능·화면 설계</td></tr>
+    <tr><td>개발(MVP)</td><td>2~3개월</td><td>OCR·AI 첨삭·교사 콘솔·랭킹 구현 및 통합 검증</td></tr>
+    <tr><td>고도화</td><td>1개월</td><td>UI/UX·접근성 감리, 사물함·캐러셀·명예의 전당 보강</td></tr>
+    <tr><td>적용·검증</td><td>8주(예정)</td><td>학급 적용, 사전·사후·교사 설문, 산출 데이터 수집</td></tr>
+  </tbody></table>
+  <div class="call point"><b class="h">연구의 제한점</b>본 보고서의 검증 수치는 산출 형식을 보이기 위한 예시(가안)이며, 실제 효과는 적용 연구를 통해 검증되어야 한다. 또한 OCR·LLM의 인식·첨삭 정밀도는 입력 품질과 모델 성능에 영향을 받으므로, 교사의 검토·확정 단계를 필수로 두어 신뢰성을 보완한다.</div>
+</div>
+
+<!-- ===== Ⅱ. 이론적 배경 ===== -->
+<div class="chapter">
+  <h2 class="sec"><span class="num">Ⅱ</span> 이론적 배경 및 선행 사례 분석</h2>
+  <div class="sec-line"></div>
+
+  <h3>1. 2022 개정 국어과와 독서·쓰기 교육</h3>
+  <p>2022 개정 국어과는 <b>'한 학기 한 권 읽기'</b>를 통한 깊이 있는 독서와, 체험·감상을 글로 표현하는 쓰기 활동을 강조한다. 특히 쓰기 영역의 <b>고쳐쓰기</b>와 <b>독자와의 공유</b>가 성취기준으로 명시되어, 독후감을 쓰고 다듬고 나누는 일련의 과정이 교육과정의 핵심 흐름과 일치한다.</p>
+  <p>나아가 교육과정은 평가관을 <b>결과 중심에서 과정 중심으로</b> 전환할 것을 요구한다. 한 편의 완성된 글을 채점하는 데 그치지 않고, 학생이 자신의 글을 점검·조정하며 성장하는 과정 자체를 관찰하고 피드백하는 것이 핵심이다. 그러나 다인수 학급에서 이러한 개별·즉시 피드백을 사람의 손만으로 제공하기는 현실적으로 어렵다. 바로 이 지점에 AI 보조의 교육적 필요성이 있다.</p>
+
+  <h3>2. 과정 중심 평가와 성취수준</h3>
+  <p>과정 중심 평가는 한 번의 결과물이 아니라 <b>성장의 궤적</b>을 평가한다. 이를 위해서는 (1) 성취기준에 근거한 <b>명료한 루브릭</b>, (2) 즉각적·구체적 <b>피드백</b>, (3) 고쳐쓰기 전후의 <b>변화 기록</b>이 필요하다. 「책갈피」의 5축 루브릭·즉시 첨삭·고쳐쓰기 향상도 측정은 이 세 요건을 직접 구현한 것이다.</p>
+
+  <h3>3. AI·에듀테크의 교육적 활용</h3>
+  <p>생성형 AI 활용 교육 연구는 2023년 이후 빠르게 증가하였으며, 초등에서는 5~6학년을 대상으로 한 사례가 가장 많다.<sup>2)</sup> 다만 다수 연구가 학생의 직접 활용에 치우쳐 있어, <b>교사가 평가·피드백 설계에 AI를 활용</b>하는 모델은 상대적으로 드물다. 본 연구는 <b>AI 초안 → 교사 확정</b> 구조로 이 공백을 겨냥한다. 또한 생성형 AI의 <b>연령 제한 약관</b>을 고려해 학생이 모델을 직접 호출하지 않도록 설계하여 규정 리스크를 회피한다.</p>
+  <p class="foot-note">2) 국내 초·중등 생성형 AI 교육 연구 동향 분석(2024) 등.</p>
+
+  <h3>4. 선행 사례 분석 — 결핍이 곧 차별점</h3>
+  <table class="tbl">
+    <thead><tr><th style="width:140px">사례</th><th>핵심</th><th style="width:150px">결핍(책갈피의 기회)</th></tr></thead>
+    <tbody>
+      <tr><td>맞춤법 학습 코스웨어</td><td>AI 맞춤법 검사·받아쓰기·게이미피케이션·OCR·LMS</td><td>철자 교정 중심 → <b>내용·사고 첨삭 부재</b></td></tr>
+      <tr><td>독서교육 지원 시스템</td><td>권장도서·독후활동 인증·진급·시상·토론</td><td>인증·권장에 그침 → <b>AI 피드백·질적 성장 추적 부재</b></td></tr>
+      <tr><td>일반 생성형 챗봇</td><td>자유로운 대화형 첨삭</td><td>교육과정 근거 없음 → <b>성취수준 진단 불가, 연령 제한</b></td></tr>
+    </tbody>
+  </table>
+  <p>구체적으로, <b>맞춤법 학습 코스웨어</b>는 AI 검사·받아쓰기·문제은행·게이미피케이션을 정교하게 구현했으나 평가의 초점이 <b>철자·표기</b>에 있어, 학생이 읽고 느낀 내용을 어떻게 더 깊게 표현할지에 대한 피드백은 제공하지 못한다. <b>독서교육 지원 시스템</b>은 권장도서·독후활동 인증·시상으로 읽기 동기를 자극하지만, 제출된 글의 <b>질적 성장(어휘·구성·사고)</b>을 진단하거나 추적하지 못한다. <b>일반 생성형 챗봇</b>은 유연한 첨삭이 가능하나, 교육과정 성취기준이라는 공통 기준이 없어 평가의 일관성·설명 가능성이 부족하며, 미성년자의 직접 이용에 약관상 제약이 있다.</p>
+  <p>이러한 공백은 「책갈피」가 채우려는 지점을 명확히 보여 준다. 즉, <b>읽은 내용을 자신의 말로 풀어내고 다듬는 과정</b>을 <b>교육과정 성취수준</b>에 비추어, <b>교사의 최종 판단</b> 아래에서 길러내는 도구가 필요하다.</p>
+  <div class="call diff"><b class="h">차별화 포지셔닝</b>
+  선행 도구가 <b>읽기를 권장</b>하고 <b>철자를 교정</b>하는 데 머물렀다면, 「책갈피」는 <b>학생이 쓴 글을 성취수준 근거로 길러주고(AI 발전 첨삭)</b>, <b>손글씨를 디지털로 잇는다(OCR)</b>. 이는 독창성과 교육과정 타당성을 동시에 확보하는 지점이다.</div>
+
+  <h3>5. 디지털 문해력과 보편적 학습설계(UDL)</h3>
+  <p>디지털 문해력은 단순한 기기 조작을 넘어, 디지털 환경에서 정보를 비판적으로 읽고 책임 있게 표현하는 역량이다. 「책갈피」는 손글씨를 디지털로 옮기고, AI 피드백을 <b>비판적으로 수용·반영해 고쳐 쓰는</b> 경험을 통해 읽기·쓰기 문해력과 디지털 문해력을 동시에 기른다.</p>
+  <p>또한 보편적 학습설계(UDL)는 학습자의 다양성을 전제로 <b>표상·표현·참여의 다중 수단</b>을 제공할 것을 강조한다. 본 시스템의 음성 입력·읽어주기·쉬운 말 모드·원고지 모드는 이 원리를 직접 구현하여, 다문화·느린 학습자·특수 학생의 접근성을 높인다.</p>
+  <div class="call key"><b class="h">선행연구의 시사점</b>국내 생성형 AI 교육 연구는 학생의 직접 활용에 치우쳐 있고, 독후감의 질적 평가·피드백을 다룬 사례는 드물다. 본 연구는 (1) 교사가 평가 설계에 AI를 활용하고, (2) 성취수준 루브릭으로 피드백을 구조화하며, (3) 과정 중심의 고쳐쓰기를 지원한다는 점에서 선행연구의 공백을 메운다.</div>
+
+  <h3>6. 독서·쓰기의 과정 중심 이해</h3>
+  <p>독서는 글의 정보를 그대로 받아들이는 것이 아니라, 독자가 자신의 배경지식과 경험을 동원해 <b>의미를 능동적으로 구성</b>하는 과정이다. 독후감은 이 의미 구성의 결과를 언어로 외화(外化)하는 활동으로, 읽기와 쓰기가 만나는 통합적 사고의 장(場)이다.</p>
+  <p>한편 쓰기 연구는 글쓰기를 ‘계획–작성–검토·수정’이 순환하는 <b>회귀적 과정</b>으로 본다. 좋은 글은 한 번에 완성되지 않으며, 자신의 글을 다시 읽고 고치는 <b>고쳐쓰기</b>를 통해 다듬어진다. 「책갈피」가 AI 첨삭과 고쳐쓰기 향상도를 핵심에 둔 것은 이러한 과정 중심 쓰기 이론에 근거한다. 학생은 피드백을 받아 다시 쓰는 경험 속에서 ‘쓰기란 고쳐 가는 것’임을 체득한다.</p>
+</div>
+
+<!-- ===== Ⅲ. 개요 및 설계 ===== -->
+<div class="chapter">
+  <h2 class="sec"><span class="num">Ⅲ</span> 소프트웨어 개요 및 설계</h2>
+  <div class="sec-line"></div>
+
+  <h3>1. 개발 환경</h3>
+  <table class="tbl"><tbody>
+    <tr><td style="width:120px">적용 교과</td><td>국어(독서·쓰기)</td><td style="width:110px">대상 학년</td><td>초등 5~6학년</td></tr>
+    <tr><td>개발 환경</td><td>HTML5·CSS3·JavaScript(단일 파일·무빌드)</td><td>운영 환경</td><td>크롬 등 웹 브라우저</td></tr>
+    <tr><td>OCR</td><td>Gemini Vision(운영자 키·서버 프록시) — <b>실배포·작동</b> / Tesseract+전처리 폴백</td><td>AI 첨삭</td><td>생성형 LLM(Gemini, 서버 프록시) — <b>실배포·작동</b> / 규칙 기반 폴백</td></tr>
+    <tr><td>맞춤법</td><td>다음(Daum) 맞춤법 검사기(서버 함수) — <b>실배포·작동</b> / 내장 사전 폴백</td><td>호스팅</td><td>Netlify 실서비스(chaekgalpi.netlify.app)</td></tr>
+    <tr><td>데이터 관리</td><td>브라우저 localStorage(프로토타입) → 서버(Firebase) 연동 <b>설계</b></td><td>최소 사양</td><td>인터넷 연결, 카메라(사진 입력 시)</td></tr>
+  </tbody></table>
+
+  <h3>2. 시스템 구조 — 처리 흐름</h3>
+  <div class="flow">
+    <div class="fl" style="background:linear-gradient(135deg,#3aa0e0,#2b86c4)"><span class="fi">✍️</span><b>입력</b>손글씨·원고지·키보드</div>
+    <div class="farr">›</div>
+    <div class="fl" style="background:linear-gradient(135deg,#22a3c4,#1d7fa8)"><span class="fi">📷</span><b>OCR</b>비전 모델·브라우저</div>
+    <div class="farr">›</div>
+    <div class="fl" style="background:linear-gradient(135deg,#7c5cf0,#5b3fd0)"><span class="fi">🤖</span><b>AI 첨삭</b>5축 루브릭</div>
+    <div class="farr">›</div>
+    <div class="fl" style="background:linear-gradient(135deg,#f5a93d,#e0871a)"><span class="fi">🧑‍🏫</span><b>교사 확정</b>조정·코멘트</div>
+    <div class="farr">›</div>
+    <div class="fl" style="background:linear-gradient(135deg,#2fc89b,#1aa67c)"><span class="fi">🌱</span><b>성장</b>포인트·랭킹</div>
+  </div>
+  <p class="foot-note">※ OCR(Gemini Vision)·맞춤법(다음 검사기)·AI 첨삭(생성형 LLM)은 운영자 키를 보관하는 <b>서버 프록시(Netlify Function)로 실제 배포되어 작동</b>하며, 학생은 모델을 직접 호출하지 않는다(연령 약관 회피). 키·서버가 없는 환경에서는 규칙 기반·브라우저 OCR(Tesseract)로 <b>자동 폴백</b>하여 무중단으로 동작한다.</p>
+
+  <h3>3. 교육과정 분석 — 성취기준 매핑</h3>
+  <p>AI 첨삭의 5개 축은 2022 개정 국어과 5~6학년군 성취기준에 직접 대응한다. <b>성취기준이 곧 채점 기준</b>이 되므로, 일반 챗봇 첨삭과 본질적으로 구별된다.</p>
+  <table class="tbl c">
+    <thead><tr><th>첨삭 축</th><th>성취기준</th><th>내용</th><th>피드백 방향(B→A)</th></tr></thead>
+    <tbody>
+      <tr><td class="em">내용 이해</td><td>[6국05-03]</td><td>인물·사건·배경 파악</td><td>요소를 적절히 정리·연결</td></tr>
+      <tr><td class="em">감상 표현</td><td>[6국03-03]</td><td>체험에 대한 감상 표현</td><td>감상을 풍부·구체적으로</td></tr>
+      <tr><td class="em">삶과 연결</td><td>[6국05-06]</td><td>작품을 삶과 연관·성찰</td><td>경험과 적극 연결·성찰</td></tr>
+      <tr><td class="em">구성·근거</td><td>[6국03-05]</td><td>통일성 있게 고쳐 쓰기</td><td>근거·문장 연결 강화</td></tr>
+      <tr><td class="em">맞춤법</td><td>[6국04-06]</td><td>표기의 정확성</td><td>표기·띄어쓰기 정확화</td></tr>
+    </tbody>
+  </table>
+  <p class="foot-note">공유·동기 관련 [6국03-06](독자와 공유)·[6국02-05](긍정적 읽기 동기)는 나눔터·랭킹 기능에 연계된다. (전체 매핑은 [붙임3])</p>
+  <p>또한 본 시스템의 활동은 2022 개정 국어과가 제시하는 <b>교과 역량</b> 함양과 직결된다.</p>
+  <table class="tbl c"><thead><tr><th style="width:160px">국어과 역량</th><th>책갈피 연계 활동</th></tr></thead><tbody>
+    <tr><td>비판적·창의적 사고</td><td>AI 발전 제안에 따른 사고 확장과 고쳐쓰기</td></tr>
+    <tr><td>디지털·미디어 소양</td><td>손글씨 OCR·디지털 독후 산출물 제작·공유</td></tr>
+    <tr><td>의사소통</td><td>나눔터·독서 토론·또래 응원</td></tr>
+    <tr><td>자기 성찰·계발</td><td>삶과 연결 첨삭·성장 그래프·독서 칭호</td></tr>
+    <tr><td>공동체·대인 관계</td><td>학급 랭킹·명예의 전당·미션 협력</td></tr>
+  </tbody></table>
+
+  <h3>4. 핵심 알고리즘 설계</h3>
+  <div class="cards">
+    <div class="fcard"><div class="t">5축 첨삭 산정</div><div class="d">LLM이 5축을 1~5점으로 진단 → 평균으로 성취수준 A(≥4)·B(≥2.8)·C 산출. 출력은 <b>칭찬·개선·발전</b> 3블록 + 맞춤법 즉시 교정쌍으로 구조화.</div></div>
+    <div class="fcard"><div class="t">손글씨 OCR 파이프라인</div><div class="d">사진 업로드 → 캔버스 다운스케일 압축 → 비전 모델 전사(키 없으면 브라우저 OCR) → 학생이 원본과 대조 교정 → 제출 시 원본을 보관(교사 열람).</div></div>
+    <div class="fcard"><div class="t">고쳐쓰기 향상도</div><div class="d">제출 글의 이전 평균과 재제출 평균의 차이를 자동 계산하여 <b>성장의 증거</b>로 누적. 과정 중심 평가의 핵심 지표.</div></div>
+    <div class="fcard"><div class="t">진위 점검(보조)</div><div class="d">베끼기·AI 생성 의심을 LLM이 판단하여 교사에게 보조 지표로 제시. 표절·과의존을 예방.</div></div>
+  </div>
+
+  <h3>5. 데이터 구조 및 화면 흐름</h3>
+  <p>핵심 데이터는 <b>계정(학생·교사)·독후감·평가·학급 활동</b>으로 구성되며, 학교·학년·반을 키로 하는 <b>학급 단위</b>로 묶인다. 학생이 같은 학교·학년·반으로 가입하면 자동으로 해당 학급에 편성된다.</p>
+  <table class="tbl"><thead><tr><th style="width:110px">엔터티</th><th>주요 속성</th></tr></thead><tbody>
+    <tr><td>계정</td><td>역할, 학교·학년·반, 이름, 포인트, 레벨·칭호, 아바타 착장, 뱃지, 알림</td></tr>
+    <tr><td>독후감</td><td>도서, 본문, 입력 방식, 5축 점수·성취수준, <b>사진 원본</b>, 고쳐쓰기 향상도, 교사 확정·코멘트</td></tr>
+    <tr><td>학급 활동</td><td>미션(도서·기간), 챌린지, 시즌(학교 대항), 독서 토론 주제</td></tr>
+  </tbody></table>
+  <p>화면은 <b>역할 분기</b>(학생 탭 / 교사 사이드바 콘솔)로 나뉘며, 독후감은 <b>입력 → AI 첨삭 → 교사 검토·확정 → 공유·랭킹</b>의 단방향 흐름을 따른다.</p>
+
+  <h3>6. 개인정보·저작권 보호 설계</h3>
+  <ul class="clean">
+    <li><b>학생의 AI 직접 호출 차단</b> — 생성형 AI 연령 제한 약관을 고려해 모델 호출을 <b>서비스에 내장된 운영자 키로 서버측에서</b> 처리하여 학생에게 노출하지 않는다.</li>
+    <li><b>운영 키 보호</b> — AI 키는 서비스(서버)에서만 관리하여 외부에 노출하지 않고, 학습 데이터는 학급 단위로 접근을 제한한다.</li>
+    <li><b>사진 원본 보호</b> — 손글씨 사진은 압축·학급 내 열람으로 제한하며, 수집·이용 동의서([붙임7])를 전제로 한다.</li>
+    <li><b>저작권 준수</b> — 폰트(오픈 라이선스)·아이콘·도서 표지는 직접 제작 또는 이용 허용 자료만 사용하고 출처를 표기한다.</li>
+  </ul>
+
+  <h3>7. 5축 첨삭 산정 예시</h3>
+  <p>실제 독후감이 어떻게 진단·피드백되는지 한 예로 보인다. 성취수준은 5축 평균으로 산출되며, 출력은 칭찬·개선·발전 3블록으로 구조화된다.</p>
+  <div class="fn"><div class="head">📝 학생 독후감 예시 — 「강아지똥」</div><div class="cell" style="font-size:9.4pt;color:#33425f;line-height:1.6">“강아지똥은 처음에 자기가 더럽고 쓸모없다고 생각했다. 하지만 민들레의 거름이 되어 예쁜 꽃을 피웠다. 나도 가끔 나를 쓸모없다고 느낄 때가 있었는데, 이 책을 읽고 누구나 소중하다는 걸 알았다.”</div></div>
+  <table class="tbl c"><thead><tr><th style="width:80px">축</th><th style="width:50px">점수</th><th>진단 근거</th></tr></thead><tbody>
+    <tr><td>내용 이해</td><td class="em">5</td><td>인물의 변화(쓸모없음→거름→꽃)를 정확히 파악</td></tr>
+    <tr><td>감상 표현</td><td class="em">4</td><td>감상이 분명하나 장면 묘사가 더 풍부할 수 있음</td></tr>
+    <tr><td>삶과 연결</td><td class="em">5</td><td>자신의 경험과 적극 연결·성찰</td></tr>
+    <tr><td>구성·근거</td><td class="em">4</td><td>흐름은 자연스러우나 근거 문장을 보탤 여지</td></tr>
+    <tr><td>맞춤법</td><td class="em">4</td><td>표기 정확, 일부 띄어쓰기 점검 필요</td></tr>
+  </tbody></table>
+  <div class="cards">
+    <div class="fcard"><div class="t">🌟 칭찬</div><div class="d">강아지똥의 변화를 잘 이해했고, 자신의 경험과 연결한 점이 훌륭해요.</div></div>
+    <div class="fcard"><div class="t">✏️ 개선</div><div class="d">“예쁜 꽃”이 핀 장면을 한 문장 더 자세히 그려 보면 감상이 살아나요.</div></div>
+    <div class="fcard"><div class="t">🚀 발전</div><div class="d">“나도 누군가에게 거름이 된 적이 있을까?”를 떠올려 한 문단 덧붙이면 사고가 깊어져요. [6국05-06]</div></div>
+    <div class="fcard"><div class="t">📊 결과</div><div class="d">5축 평균 <b>4.4 → 성취수준 A</b>. 교사 확정 후 포인트·성장 기록에 반영.</div></div>
+  </div>
+
+  <h3>8. 기술적 안정성과 성능 고려</h3>
+  <p>현장 도구는 무엇보다 <b>안정적으로 끊김 없이</b> 동작해야 한다. 「책갈피」는 ① AI 키가 없거나 네트워크가 불안정해도 규칙 기반 첨삭·브라우저 OCR로 <b>자동 폴백</b>하여 수업이 멈추지 않게 하고, ② 단일 HTML·무빌드 구조로 배포·갱신을 단순화했으며, ③ 이미지·데이터를 압축·경량화하여 저사양 단말과 학교 네트워크에서도 무리 없이 동작하도록 설계하였다. 또한 입력이 짧거나 비어 있는 경우 등 예외 상황에 대한 안내 메시지를 제공해 사용성을 높였고, 모든 화면은 데스크톱과 태블릿·스마트폰에 모두 대응하는 반응형으로 구성하였다.</p>
+
+  <h3>9. 구현 현황 및 범위 — 실제 구현·시연용·향후 과제</h3>
+  <p>본 연구는 ‘설계만 한 기획’이 아니라 <b>실제 배포되어 작동하는 소프트웨어</b>를 산출하였다. 동시에, 교육 행정 시스템의 폐쇄성과 단일 서버 미보유라는 현실적 제약을 <b>투명하게 구분</b>하여 밝힌다. 핵심 교육 기능은 실모듈로 동작하며, 미구현 항목은 대부분 외부 폐쇄망·서버 인프라에 기인하므로 명확한 일반화 로드맵으로 이어진다.</p>
+  <table class="tbl">
+    <thead><tr><th style="width:96px">구분</th><th>항목</th><th>비고</th></tr></thead>
+    <tbody>
+    <tr><td>✅ 실구현·배포</td><td>손글씨 OCR(Gemini Vision) · 맞춤법(다음 검사기 서버 프록시) · AI 5축 첨삭 · 진위 점검 — 모두 운영자 키 서버 프록시로 <b>실작동</b></td><td>실서비스 호스팅(Netlify)에서 실제 학생 손글씨 판독·첨삭 검증 완료</td></tr>
+    <tr><td>✅ 실구현·배포</td><td>전국 초등 6,331개교 NEIS 실데이터 로그인·검색 / 4계층 역할 / 입력 3종(키보드·원고지·OCR) / 5축 루브릭·교사 루브릭 가중치 / 고쳐쓰기 Diff·향상도 / 교사 검토·확정·코멘트 / NEIS 생기부 자동요약 / 표창장·가정통신문·포트폴리오·CSV 산출 / 음성 입력(STT)·읽어주기(TTS)·쉬운 말 모드 / OCR 돋보기 / 성장 카드 PNG 저장 / 나만의 단어장</td><td>브라우저에서 즉시 작동 <small>(음성 입력은 Chrome 기반 브라우저 필요 — Web Speech API)</small></td></tr>
+    <tr><td>✅ 실구현·배포</td><td>카카오/네이버 책 검색 API 연동(Netlify 서버 프록시) — 책 표지 자동 불러오기·독후감 작성 시 책 검색·표지 미리보기 / 독서 게임 8종(골든벨·밸런스게임·빙고·책 퀴즈·퀴즈 대결·어휘게임·인물맞히기·마라톤)</td><td>실제 API 키 연동 완료(Netlify 환경변수 등록)</td></tr>
+    <tr><td>⚠️ 시연용 데이터</td><td>도서관 대출(DLS) 현황 · 전국 랭킹 · 학교 대항전</td><td>화면·집계 로직은 작동하나 데이터는 시연용 시드. 독서로DLS는 교육청 <b>폐쇄망</b>이라 공개 API 부재 → CSV 업로드·정보나루 OpenAPI로 확장 가능</td></tr>
+    <tr><td>⚠️ 구조적 제약</td><td>데이터 저장(localStorage·기기 1대 한정) · 실시간 퀴즈 대결(봇 시뮬레이션)</td><td>학급 공유·영속·실시간 멀티는 서버 DB 전환 시 해소(설계 완료)</td></tr>
+    <tr><td>❌ 향후 과제</td><td>Firebase 서버 전환(설계 완료) · 정보나루 OpenAPI 연동 · DLS CSV 업로드 · 실제 학급 적용 검증 데이터 수집</td><td>Ⅴ장 검증 수치는 현재 <b>예시(가안)</b>이며, 본 적용 후 실측치로 대체 예정</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ===== Ⅳ. 활용 방법 ===== -->
+<div class="chapter">
+  <h2 class="sec"><span class="num">Ⅳ</span> 소프트웨어 활용 교육 방법과 과정</h2>
+  <div class="sec-line"></div>
+
+  <h3>1. 구성 체제</h3>
+  <p>「책갈피」는 <b>학생 · 담임교사 · 교무관리자 · 사서교사</b>의 4계층 권한으로 구성되어, 단일 학급을 넘어 <b>학교 전체의 독서 교육 시스템</b>으로 작동한다. 성장은 <b>6단계(씨앗→새싹→묘목→나무→꽃→열매)</b>와 독서 칭호로 시각화된다.</p>
+  <table class="tbl"><thead><tr><th style="width:78px">대상</th><th style="width:185px">상위 메뉴</th><th>주요 하위 기능</th></tr></thead><tbody>
+    <tr><td>학생</td><td>내 서재 · 독후감 쓰기 · 단계 학습 · 독서게임 · 나눔터 · 상점 · 랭킹</td><td>성장·칭호·책 발견(북 트레일러) / OCR·원고지·AI 첨삭·고쳐쓰기 Diff / 레벨 패스·위저드 / 우수작·토론 / 아바타 사물함 / 포디움·명예의 전당</td></tr>
+    <tr><td>담임교사</td><td>학급 대시보드 · 독후감 검토 · 학생 관리 · 미션 · 랭킹</td><td>통계·5축 분석·표창장 / 검토·확정·원본 열람·진위 점검·Diff / 비번 초기화·포인트 지급 / 미션 개설</td></tr>
+    <tr><td>교무관리자</td><td>학교 종합 통계 · NEIS 생기부 자동요약</td><td>전교 KPI·학년별 5축 분포·학급 비교 / 생기부 ‘독서활동상황’ 요약문 자동 생성·복사</td></tr>
+    <tr><td>사서교사</td><td>도서관 대시보드 · 이달의 책·행사</td><td>전교 독서현황·인기 독후도서 / DLS 대출 Top(→학생 ‘책 발견’ 자동 반영) / 이달의 책·학교 챌린지 개설</td></tr>
+  </tbody></table>
+  <div class="shotwrap"><img class="shot" src="home.png"><div class="cap">［화면 1] 학생 홈 — 캐릭터·레벨/독서 칭호·마스터 도달률·성장 그래프·책 발견 캐러셀</div></div>
+
+  <h3>2. 기능별 활용 방법</h3>
+
+  <h4>가. 손글씨 OCR 독후감 입력</h4>
+  <div class="shotwrap"><img class="shot" src="ocr.png"><div class="cap">［화면 2] 사진 OCR 입력 — 사진 업로드 · AI 문자 변환 · 변환 글 대조 교정</div></div>
+  <div class="fn"><div class="head">📷 손글씨 OCR 입력</div><div class="grid2">
+    <div class="cell l"><div class="ct">기능 (온·오프라인 연계)</div><ul><li>종이 독후감을 사진으로 업로드</li><li>비전 모델이 손글씨를 텍스트로 변환</li><li>원본과 대조하며 직접 교정</li></ul></div>
+    <div class="cell"><div class="ct">제작 의도</div><ul><li>오프라인 손글씨 쓰기의 가치를 유지하면서 디지털 학습으로 연계</li><li>키가 없으면 브라우저 OCR로 폴백하여 무중단 동작</li></ul></div>
+  </div></div>
+
+  <h4>나. AI 5축 발전적 첨삭</h4>
+  <div class="shotwrap"><img class="shot" src="write.png"><div class="cap">［화면 3] AI 첨삭 — 5축 진단 막대·성취수준 표시·칭찬/개선/발전 피드백</div></div>
+  <div class="fn"><div class="head">🤖 5축 루브릭 첨삭</div><div class="grid2">
+    <div class="cell l"><div class="ct">기능</div><ul><li>5축(내용·감상·삶 연결·구성·맞춤법) 점수 진단</li><li>칭찬·개선·발전 3블록 피드백</li><li>맞춤법 오류 즉시 교정</li></ul></div>
+    <div class="cell"><div class="ct">제작 의도</div><ul><li>성취기준을 채점 기준으로 삼아 교육적 근거 확보</li><li>"발전" 제안으로 B→A 수준의 사고 확장 유도</li></ul></div>
+  </div></div>
+
+  <h4>다. 책 발견·추천과 단계 학습</h4>
+  <div class="shotgrid">
+    <div><img class="shot" src="learn.png"><div class="cap">［화면 4] 단계 학습 — 6단계 성장 경로 + 5단계 작성 위저드</div></div>
+    <div><img class="shot" src="locker.png"><div class="cap">［화면 5] 아바타 사물함 — 6슬롯 장착·인벤토리(읽기 동기)</div></div>
+  </div>
+  <div class="fn"><div class="head">📚 책 발견 · 🎓 단계 학습 · 🛍️ 아바타</div><div class="grid2">
+    <div class="cell l"><div class="ct">기능</div><ul><li>학년 맞춤·이달의 추천·인기·대출 Top 캐러셀</li><li>성취기준 연계 5단계 작성 위저드</li><li>포인트로 캐릭터 꾸미기(사물함)</li></ul></div>
+    <div class="cell"><div class="ct">제작 의도</div><ul><li>"무엇을 읽고 어떻게 쓸지"의 막막함 해소</li><li>성취 보상 루프로 지속적 읽기 동기 부여</li></ul></div>
+  </div></div>
+
+  <h4>라. 교사 관리 콘솔 — 검토·확정·분석</h4>
+  <div class="shotgrid">
+    <div><img class="shot" src="teacher.png"><div class="cap">［화면 6] 교사 대시보드 — 사이드바 콘솔·통계·학급 5축 분석 인사이트</div></div>
+    <div><img class="shot" src="review.png"><div class="cap">［화면 7] 독후감 검토 — AI 초안 점수 조정·코멘트·원본 열람·일괄 승인</div></div>
+  </div>
+  <div class="fn"><div class="head">🧑‍🏫 교사 관리 콘솔 (LMS)</div><div class="grid2">
+    <div class="cell l"><div class="ct">기능</div><ul><li>AI 5축 초안을 교사가 조정·확정, 코멘트 작성</li><li>제출 사진 원본 대조 열람, AI 진위 점검</li><li>학급 약점 자동 진단·추천 활동, 미션 개설</li></ul></div>
+    <div class="cell"><div class="ct">제작 의도</div><ul><li>평가의 결정·격려는 교사 몫 → 교육적 책임성</li><li>반복 업무(채점·기록·표창장)를 자동화해 업무 경감</li></ul></div>
+  </div></div>
+
+  <h4>마. 나눔과 랭킹 — 공유·동기</h4>
+  <div class="shotgrid">
+    <div><img class="shot" src="podium.png"><div class="cap">［화면 8] 포디움 Top 3 랭킹 — 성장 포인트 기반</div></div>
+    <div><img class="shot" src="hall.png"><div class="cap">［화면 9] 명예의 전당 — 학급 총 포인트·마스터·1위 라이브 집계</div></div>
+  </div>
+  <div class="fn"><div class="head">🏆 나눔터 · 랭킹 · 명예의 전당</div><div class="grid2">
+    <div class="cell l"><div class="ct">기능</div><ul><li>우수작 공유·또래 응원, 독서 토론방</li><li>우리 반·학교·전국 랭킹(포디움), 챌린지</li></ul></div>
+    <div class="cell"><div class="ct">제작 의도</div><ul><li>[6국03-06] 독자와 공유 태도 함양</li><li>경쟁이 아닌 <b>성장 기반</b> 랭킹으로 건강한 동기 부여</li></ul></div>
+  </div></div>
+
+  <h4>사. 성장 기록 · 뱃지 · 표창장</h4>
+  <div class="fn"><div class="head">📈 성장 기록 · 🏅 뱃지 · 🎖️ 표창장</div><div class="grid2">
+    <div class="cell l"><div class="ct">기능</div><ul><li>독후감 성취수준 추이(성장 그래프)·독서 나무</li><li>뱃지·업적 자동 획득, 고쳐쓰기 향상도 누적</li><li>교사용 표창장·가정통신문 PDF 자동 생성</li></ul></div>
+    <div class="cell"><div class="ct">제작 의도</div><ul><li>“쓸수록 자란다”는 과정 중심의 성장을 가시화</li><li>교사 행정 부담을 줄이고 가정 연계를 강화</li></ul></div>
+  </div></div>
+
+  <h3>3. 수업 적용 시나리오(예시)</h3>
+  <table class="tbl c">
+    <thead><tr><th>차시</th><th>활동</th><th>책갈피 활용</th><th>성취기준</th></tr></thead>
+    <tbody>
+      <tr><td>1차시</td><td>책 고르기·읽기 계획</td><td>책 발견 캐러셀·단계 학습 위저드</td><td>[6국02-05]</td></tr>
+      <tr><td>2차시</td><td>독후감 초안(손글씨)</td><td>원고지·OCR 입력</td><td>[6국03-03]</td></tr>
+      <tr><td>3차시</td><td>AI 첨삭·고쳐쓰기</td><td>5축 진단·발전 제안·향상도</td><td>[6국03-05]</td></tr>
+      <tr><td>4차시</td><td>공유·토론·시상</td><td>나눔터·랭킹·명예의 전당</td><td>[6국03-06]·[6국05-04]</td></tr>
+      <tr><td>상시</td><td>평가·기록</td><td>교사 검토·확정, 학급 분석, 표창장</td><td>과정 중심 평가</td></tr>
+    </tbody>
+  </table>
+
+  <h4>바. 독서 게임과 보편적 접근성(UDL)</h4>
+  <div class="fn"><div class="head">🎮 독서 게임 · ♿ 접근성 지원</div><div class="grid2">
+    <div class="cell l"><div class="ct">기능</div><ul><li>골든벨·밸런스게임·빙고·책 퀴즈·퀴즈 대결·어휘게임·인물맞히기·마라톤 8종 독서 게임(포인트 획득)</li><li>음성 입력(STT)·읽어주기(TTS)·쉬운 말 모드 <small>(음성 입력은 Chrome 필요)</small></li></ul></div>
+    <div class="cell"><div class="ct">제작 의도</div><ul><li>놀이로 읽기 흥미를 유지하고 자투리 시간 활용</li><li>다문화·느린 학습자·특수 학생까지 보편적으로 지원(UDL)</li></ul></div>
+  </div></div>
+
+  <h4>한 학기 한 권 읽기 연계 8주 운영 계획(예시)</h4>
+  <table class="tbl c"><thead><tr><th style="width:90px">주차</th><th>운영 초점</th><th>핵심 활용</th></tr></thead><tbody>
+    <tr><td>1~2주</td><td>도입·진단</td><td>가입·학급 편성, 사전 설문, 첫 독후감(진단)</td></tr>
+    <tr><td>3~5주</td><td>읽기·쓰기·고쳐쓰기</td><td>OCR 입력·AI 5축 첨삭·고쳐쓰기 향상도 누적</td></tr>
+    <tr><td>6~7주</td><td>공유·심화</td><td>나눔터·독서 토론·미션·챌린지</td></tr>
+    <tr><td>8주</td><td>정리·평가</td><td>명예의 전당·표창장, 사후 설문, 교사 학급 분석</td></tr>
+  </tbody></table>
+
+  <h3>4. 본시 교수·학습 과정안 예시 (3차시 — AI 첨삭·고쳐쓰기)</h3>
+  <table class="tbl"><thead><tr><th style="width:64px">단계</th><th>교수·학습 활동</th><th style="width:130px">자료 / 유의점</th></tr></thead><tbody>
+    <tr><td>도입(5′)</td><td>지난 차시 독후감 떠올리기, 학습 목표 확인 — “AI 첨삭을 읽고 내 글을 더 좋게 고쳐 쓸 수 있다”</td><td>학생 단말·책갈피 접속</td></tr>
+    <tr><td>전개①(10′)</td><td>독후감 제출 후 AI 5축 진단 확인, 칭찬·개선·발전 피드백 읽기</td><td>‘발전’ 제안에 주목하도록 안내</td></tr>
+    <tr><td>전개②(15′)</td><td>발전 제안을 반영해 한 문단 이상 고쳐 쓰기, 맞춤법 즉시 교정 활용</td><td>또래와 아이디어 한 가지 나누기</td></tr>
+    <tr><td>전개③(7′)</td><td>고쳐쓰기 전·후 성취수준 향상도 확인, 우수작 공유</td><td>향상도 그래프 함께 보기</td></tr>
+    <tr><td>정리(3′)</td><td>오늘 좋아진 점 한 줄 쓰기, 다음 읽을 책 예고</td><td>교사 코멘트·포인트 지급</td></tr>
+  </tbody></table>
+  <p class="foot-note">※ 중심 성취기준 : [6국03-05] 통일성 있게 고쳐 쓰기, [6국05-06] 작품을 삶과 연관 지어 성찰.</p>
+
+  <h3>5. 고쳐쓰기 전·후 비교(Diff) — 과정 중심 평가의 시각화</h3>
+  <p>학생이 AI 첨삭을 반영해 글을 고쳐 쓰면, 이전 글과 현재 글을 <b>단어 단위로 비교</b>하여 추가된 부분은 초록, 삭제된 부분은 빨강으로 표시한다(GitHub 스타일). 성취수준 향상도를 함께 제시하여, 본 연구가 강조한 <b>‘과정 중심 평가’와 ‘고쳐쓰기 성장’을 한눈에</b> 드러낸다. 학생의 자기 점검과 교사의 평가 근거로 동시에 활용된다.</p>
+  <div class="shotwrap"><img class="shot" src="diff.png"><div class="cap">［화면 10] 고쳐쓰기 전·후 Diff 뷰어 — 초록(추가)·빨강(삭제) + 성취수준 향상도(3.0→4.2)</div></div>
+
+  <h3>6. 학교 전체 운영 — 교무관리자·사서교사</h3>
+  <p>담임·학급을 넘어 학교 단위 독서 교육을 지원하는 두 권한을 둔다. <b>교무관리자</b>는 전교 독서 통계와 NEIS 생기부 자동요약으로 행정을 자동화하고, <b>사서교사</b>는 전교 독서현황과 도서관 대출(DLS)을 운영한다.</p>
+  <div class="shotgrid">
+    <div><img class="shot" src="admin_stats.png"><div class="cap">［화면 11] 교무관리자 — 학교 종합 통계(학년별 5축 분포)·약점 자동 진단</div></div>
+    <div><img class="shot" src="lib_dash.png"><div class="cap">［화면 12] 사서교사 — 전교 독서현황·인기 독후도서·DLS 대출 Top</div></div>
+  </div>
+  <div class="fn"><div class="head">🏫 교무관리자 · 📚 사서교사</div><div class="grid2">
+    <div class="cell l"><div class="ct">기능</div><ul><li>전교 KPI·학년별 5축 분포·학급 비교(엑셀형)</li><li>NEIS ‘독서활동상황’ 요약문 자동 생성·복사(받침 조사 처리)</li><li>DLS 대출 데이터 → 학생 ‘책 발견’에 자동 반영</li><li>이달의 책·학교 챌린지 개설</li></ul></div>
+    <div class="cell"><div class="ct">제작 의도</div><ul><li>학기 말 생기부·통계 업무를 자동화해 부담 경감</li><li>도서관과 교실 독서활동을 하나로 연결</li><li>“학급용 → 학교 전체 독서 시스템”으로 확장</li></ul></div>
+  </div></div>
+
+  <h3>7. 북 트레일러 — 시각적 동기 부여</h3>
+  <p>‘책 발견’에서 책을 누르면, 책의 분위기를 담은 <b>모션 그래픽 북 트레일러</b>와 핵심 줄거리가 모달로 재생된다. 학생이 한 문장을 입력하면 AI가 짧은 소개 영상을 만들어 주는(데모) 프레임도 제공하여, 텍스트를 넘어선 시각적 독서 동기를 부여한다.</p>
+  <div class="shotwrap" style="max-width:300px;margin-left:auto;margin-right:auto"><img class="shot" src="trailer.png"><div class="cap">［화면 13] 북 트레일러 모달 — 테마 모션 그래픽·줄거리·AI 영상 생성(데모)</div></div>
+
+  <h3>8. 과정·협력·자율을 강화하는 보조 기능</h3>
+  <p>현장 전문가 피드백을 반영하여, 쓰기의 전(全) 과정과 교사 자율성·가정 연계를 강화하는 보조 기능을 추가하였다.</p>
+  <table class="tbl"><thead><tr><th style="width:128px">기능</th><th>내용 · 교육적 의도</th></tr></thead><tbody>
+    <tr><td>🕸️ 생각그물(0단계)</td><td>쓰기 전 핵심 낱말·장면·느낌을 모아 첫 문장을 자동 생성 — 글쓰기 막막함 해소, 과정 중심 쓰기 완성</td></tr>
+    <tr><td>💬 동료평가 스티커</td><td>친구 글의 <b>문장에 긍정 피드백 스티커</b>(멋진 표현·공감·나도 그래요) — [6국05-04] 협력적 소통</td></tr>
+    <tr><td>⚖️ 루브릭 가중치</td><td>교사가 책·수업 목표에 따라 <b>5축 가중치·이번 주 강조 축</b>을 설정 — 평가의 교사 자율성</td></tr>
+    <tr><td>📤 성장 카드</td><td>독서 나무·고쳐쓰기 향상도를 <b>이미지 카드</b>로 저장해 학부모와 공유 — 가정 연계</td></tr>
+    <tr><td>📒 나만의 단어장</td><td>독후감 어휘를 자동 수집 + 활용 게임 — 어휘력·문해력 향상</td></tr>
+    <tr><td>🎨🎤 멀티미디어</td><td>책 장면 그림·낭독 녹음 첨부 — 시각·청각 표현(멀티미디어 리터러시)</td></tr>
+    <tr><td>🔍 OCR 돋보기</td><td>원본 사진 확대경으로 손글씨를 대조 — OCR 교정 부담 경감</td></tr>
+  </tbody></table>
+</div>
+
+<!-- ===== Ⅴ. 연구 결과 ===== -->
+<div class="chapter">
+  <h2 class="sec"><span class="num">Ⅴ</span> 연구 결과 — 검증 설계 및 산출 지표</h2>
+  <div class="sec-line"></div>
+  <div class="call warn"><b class="h">검증 데이터에 관한 안내(연구 윤리)</b>
+  본 보고서는 프로토타입 개발 단계의 산출물로, 아래 <b>사전·사후 수치는 실제 교실 적용 후 산출값으로 대체되어야 할 ‘검증 설계 및 예시(가안)’</b>이다. 본 연구는 효과를 단정하지 않으며, 검증 도구·절차의 타당성과 시스템이 자동 산출하는 객관 지표를 제시하는 데 초점을 둔다.</div>
+
+  <h3>1. 검증 대상 및 방법(설계)</h3>
+  <table class="tbl"><tbody>
+    <tr><td style="width:110px">활용 대상</td><td>초등 5~6학년 2개 학급 내외(적용교 협의)</td></tr>
+    <tr><td>활용 기간</td><td>8주(한 학기 한 권 읽기 주기 연계)</td></tr>
+    <tr><td>검사 도구</td><td>① 성취수준 5축 루브릭(교육과정 기반 자체 개발) ② 읽기·쓰기 동기/태도 설문(사전·사후) ③ 교사 업무경감·효과성 설문</td></tr>
+    <tr><td>분석 방법</td><td>사전·사후 비교, 고쳐쓰기 향상도(시스템 자동 산출), 설문 기술통계</td></tr>
+  </tbody></table>
+  <p>검증은 ① 도입기 첫 독후감으로 <b>사전 성취수준</b>을 진단하고, ② 8주간 OCR 입력·AI 첨삭·고쳐쓰기를 반복하며 시스템이 향상도를 누적한 뒤, ③ 종료기에 동일 조건의 독후감으로 <b>사후 성취수준</b>을 측정해 비교하는 절차로 설계한다. 동기·태도는 동일 문항의 사전·사후 설문으로, 교사 효과성은 활용도·업무경감 설문으로 확인한다. 모든 원자료는 학급 단위로 보관하여 검증의 재현성을 확보한다.</p>
+
+  <h3>2. 검증 도구</h3>
+  <ul class="clean">
+    <li><b>성취수준 루브릭(5축)</b> — 독후감을 내용·감상·삶 연결·구성·맞춤법으로 진단(A·B·C). AI 초안과 교사 확정을 함께 기록해 평가 일관성을 점검.</li>
+    <li><b>학생 동기·태도 설문</b> — 읽기 흥미, 쓰기 자신감, 자기주도성 등 10문항(5점 척도, 사전·사후). 전문은 [붙임4·5].</li>
+    <li><b>교사 설문</b> — 업무 부담 경감, 학생 관리 편의, 교육 효과성, 지속 사용·추천 의향. 전문은 [붙임6].</li>
+  </ul>
+
+  <h3>3. 시스템 자동 산출 지표(객관 근거)</h3>
+  <p>「책갈피」는 평가 데이터를 자동 집계하여 <b>효과 검증의 원자료</b>를 제공한다. 아래는 산출 형식의 <b>예시(가안)</b>이다.</p>
+  <h4>가. 고쳐쓰기 전·후 성취수준 향상도 〔예시〕</h4>
+  <table class="tbl c">
+    <thead><tr><th>구분</th><th>사전 평균(5점)</th><th>사후 평균(5점)</th><th>향상도</th></tr></thead>
+    <tbody>
+      <tr><td>내용 이해</td><td>3.1</td><td>4.0</td><td class="em">+0.9</td></tr>
+      <tr><td>감상 표현</td><td>2.8</td><td>3.9</td><td class="em">+1.1</td></tr>
+      <tr><td>삶과 연결</td><td>2.6</td><td>3.8</td><td class="em">+1.2</td></tr>
+      <tr><td>구성·근거</td><td>2.9</td><td>3.7</td><td class="em">+0.8</td></tr>
+      <tr><td>맞춤법</td><td>3.3</td><td>4.1</td><td class="em">+0.8</td></tr>
+      <tr><td><b>전체 평균</b></td><td><b>2.94</b></td><td><b>3.90</b></td><td class="em"><b>+0.96</b></td></tr>
+    </tbody>
+  </table>
+  <p class="foot-note">※ 위 수치는 산출 형식을 보이기 위한 예시이며, 실제 적용 학급의 자동 집계값으로 대체된다.</p>
+
+  <h4>나. 성취수준 분포 변화 〔예시〕 · 산출 지표 요약</h4>
+  <div class="stats">
+    <div class="stbox" style="--ac:var(--navy)"><div class="n">10</div><div class="l">통합 기능 영역</div></div>
+    <div class="stbox" style="--ac:var(--mint)"><div class="n">0</div><div class="l">구동 오류(건)</div></div>
+    <div class="stbox" style="--ac:var(--sky)"><div class="n">5축</div><div class="l">성취수준 루브릭</div></div>
+    <div class="stbox" style="--ac:var(--amber)"><div class="n">자동</div><div class="l">향상도·분포 산출</div></div>
+  </div>
+  <p>학급의 A수준 비율, 평균 포인트, 5축 약점은 교사 대시보드에서 <b>실시간 자동 집계</b>되어(［화면 6] 참조) 수업 설계와 보고서 근거 자료로 활용된다.</p>
+
+  <h3>4. 검증의 신뢰성 확보</h3>
+  <ul class="clean">
+    <li><b>도구 타당성</b> — 5축 루브릭은 2022 개정 성취기준에 근거하여 내용 타당도를 확보하고, 설문은 선행 연구의 동기·태도 문항을 참고해 구성한다.</li>
+    <li><b>채점 일관성</b> — AI 초안과 교사 확정 점수를 함께 기록해 채점자 간 차이를 점검하고, 필요 시 루브릭 기준을 보정한다.</li>
+    <li><b>객관 자료</b> — 고쳐쓰기 전·후 점수, 제출 편수, 성취수준 분포를 시스템이 자동 집계하여 임의 개입 없이 원자료로 보관한다.</li>
+  </ul>
+
+  <h3>5. 학생 동기·태도 설문 기대 결과 〔예시〕</h3>
+  <table class="tbl c"><thead><tr><th>문항(요약)</th><th>사전</th><th>사후</th><th>변화</th></tr></thead><tbody>
+    <tr><td>책 읽기가 즐겁다</td><td>3.2</td><td>4.1</td><td class="em">+0.9</td></tr>
+    <tr><td>독후감 쓰기에 자신이 있다</td><td>2.6</td><td>3.8</td><td class="em">+1.2</td></tr>
+    <tr><td>글을 쓴 뒤 다시 읽고 고친다</td><td>2.7</td><td>4.0</td><td class="em">+1.3</td></tr>
+    <tr><td>AI 도움 학습이 편리하다</td><td>3.4</td><td>4.4</td><td class="em">+1.0</td></tr>
+  </tbody></table>
+  <p class="foot-note">※ 예시(가안). 실제 적용 학급의 응답으로 대체된다. 사전·사후 동일 문항([붙임4·5])으로 비교한다.</p>
+
+  <h3>6. 기대 효과</h3>
+  <ul class="clean">
+    <li><b>학생</b> — 구체적·즉각적 피드백과 고쳐쓰기 향상도 가시화로 쓰기 자신감과 자기주도성 향상.</li>
+    <li><b>교사</b> — AI 초안·자동 집계·표창장 자동화로 평가·행정 부담 경감, 개별 지도 시간 확보.</li>
+    <li><b>학급</b> — 성장 기반 랭킹·명예의 전당으로 경쟁이 아닌 건강한 읽기 문화 형성.</li>
+  </ul>
+
+  <h3>7. AI 윤리 및 교육적 책임성</h3>
+  <p>생성형 AI를 학교 현장에 들일 때는 <b>할루시네이션·편향·과의존</b>이라는 위험을 반드시 다루어야 한다. 본 시스템은 다음 장치로 이를 통제한다.</p>
+  <table class="tbl"><thead><tr><th style="width:130px">위험</th><th>대응 설계</th></tr></thead><tbody>
+    <tr><td>할루시네이션<br>(허위·과장)</td><td><b>교사 확정 권한 필수화</b> — AI는 ‘초안 점수·제안’만 내고, 성취수준의 최종 결정과 정서적 격려는 교사가 한다. AI 진위 점검도 보조 지표로만 활용한다.</td></tr>
+    <tr><td>편향·불공정</td><td>평가를 <b>2022 개정 성취기준(5축 루브릭)</b>에 고정해 설명 가능성을 확보하고, 교사가 가중치를 조정해 수업 맥락을 반영한다.</td></tr>
+    <tr><td>과의존</td><td>학생이 AI 제안을 <b>비판적으로 수용</b>해 ‘고쳐쓰기’하도록 지도하고, 생각그물·동료평가 등 사람 중심 활동을 함께 둔다.</td></tr>
+    <tr><td>연령·개인정보</td><td>학생은 모델을 직접 호출하지 않으며(연령 약관 회피), 사적 경험이 담긴 독후감은 학급 내 열람으로 제한하고 외부 공유는 동의를 전제한다.</td></tr>
+  </tbody></table>
+  <div class="call key"><b class="h">설계 철학 — “AI는 보조, 교육의 결정과 책임은 교사”</b>
+  「책갈피」는 AI가 교사를 대체하지 않고 <b>교사의 전문성을 증폭</b>하도록 워크플로를 설계한다. AI가 반복 업무를 덜고, 교사는 평가의 결정과 학생과의 정서적 상호작용에 집중한다. 이로써 기술의 효율과 교육의 책임성을 동시에 달성한다.</div>
+</div>
+
+<!-- ===== Ⅵ. 결론 및 일반화 ===== -->
+<div class="chapter">
+  <h2 class="sec"><span class="num">Ⅵ</span> 결론 및 일반화</h2>
+  <div class="sec-line"></div>
+
+  <h3>1. 결론</h3>
+  <div class="need"><div class="lab">가. 성취수준 기반 발전적 첨삭</div><div class="body">독후감을 5축 루브릭으로 진단하고 칭찬·개선·발전 피드백을 제공함으로써, 일반 챗봇식 격려를 넘어 <b>교육과정에 근거한 성장 지원</b>을 구현하였다.</div></div>
+  <div class="need"><div class="lab">나. 손글씨–디지털의 연계</div><div class="body">OCR로 종이 독후감을 디지털로 이으면서, 오프라인 손글씨 쓰기의 가치를 유지하였다. 제출 원본을 교사가 대조 열람하여 평가 신뢰성을 높였다.</div></div>
+  <div class="need"><div class="lab">다. 교사 업무 경감과 책임성</div><div class="body">AI 초안 → 교사 확정 구조로 반복 업무를 줄이면서 평가의 결정·격려는 교사가 맡아, 업무 경감과 교육적 책임성을 동시에 달성하였다.</div></div>
+  <div class="need"><div class="lab">라. 읽기 동기와 성장 가시화</div><div class="body">6단계 성장·칭호·랭킹·고쳐쓰기 향상도로 "쓸수록 자라는" 경험을 제공하여, 읽기·쓰기 동기와 자기효능감을 높이도록 설계하였다.</div></div>
+
+  <h3>2. 일반화 방안</h3>
+  <ul class="clean">
+    <li><b>학교 전체 확장성</b> — 학생·담임·교무관리자·사서교사 4계층으로, 단일 학급을 넘어 <b>학교 단위 독서 교육 시스템</b>으로 도입 가능. 도서관(DLS)·생기부(NEIS)와 연계되어 업무 자동화 효과가 크다.</li>
+    <li><b>접근성</b> — 무설치 반응형 웹으로 기기·운영체제에 관계없이 접속. 별도 구축 없이 학급 단위로 즉시 도입.</li>
+    <li><b>교육과정 표준 연계</b> — 2022 개정 성취기준에 매핑되어 전국 어느 학급의 국어 수업에도 그대로 적용 가능.</li>
+    <li><b>포용</b> — 음성 입력·읽어주기·쉬운 말 모드로 다문화·느린 학습자·특수 학생까지 보편적으로 지원(UDL).</li>
+    <li><b>키 설정 불필요·보안</b> — 운영자 키를 서버측에 내장해, 교사·학생은 <b>별도의 키 설정 없이</b> 즉시 사용하며 개인정보 노출을 최소화하여 공교육 확산에 유리.</li>
+  </ul>
+  <p>특히 본 시스템은 <b>별도의 서버 구축이나 예산 없이</b> 학급 단위로 즉시 시작할 수 있다는 점에서 확산 장벽이 낮다. 교사는 가입 후 곧바로 학급을 개설하고, 학생은 같은 학교·학년·반으로 가입하면 자동으로 편성된다. 이러한 <b>제로 셋업(zero-setup)</b> 특성은 디지털 인프라 격차가 있는 학교에서도 책갈피를 무리 없이 활용할 수 있게 하여, 교육 형평성 측면에서도 의미를 가진다.</p>
+
+  <h3>3. 제언</h3>
+  <p>향후 (1) 실제 학급 적용을 통한 <b>효과 검증 데이터 수집</b>, (2) 도서관 대출·실제 제출 집계와의 <b>실데이터 연동</b>, (3) 서버/DB 마이그레이션과 OCR·첨삭 엔진 고도화, (4) 국어과 외 교과(사회·과학 독서)로의 <b>확장</b>이 필요하다. 교사·학생이 함께 축적하는 독후 데이터는 시간이 갈수록 시스템의 진단 정밀도와 교육적 가치를 높일 것이다.</p>
+  <p>특히 누적된 독후감과 교사 확정 데이터는 그 자체로 <b>학교 맞춤형 평가 자료</b>가 된다. 학년·학급의 성취수준 변화를 장기적으로 관찰하면 독서·쓰기 교육과정 운영을 데이터에 근거해 개선할 수 있으며, 학생 개인의 성장 포트폴리오는 진급·진학 시 의미 있는 참고 자료로 활용될 잠재력을 지닌다.</p>
+
+  <h3>4. 연구의 의의</h3>
+  <p>본 연구는 ① 독후감의 <b>내용·사고</b>를 성취수준 루브릭으로 진단하는 미개척 영역을 다루었고, ② 손글씨 OCR로 오프라인 쓰기와 디지털 학습을 연결했으며, ③ <b>AI 초안–교사 확정</b>이라는 인간 중심 평가 모델을 제시했다는 점에서 의의가 있다. 이는 생성형 AI를 교육에 책임 있게 통합하는 하나의 실천 모델로서, 다른 교과·학교급으로 확장될 잠재력을 지닌다.</p>
+
+  <div class="call key" style="margin-top:18px"><b class="h">맺음말</b>
+  「책갈피」는 <b>읽고(독서) · 쓰고(첨삭) · 자라는(성장)</b> 경험을 하나로 엮은 독서활동 플랫폼이다. 손글씨와 디지털, AI와 교사, 평가와 동기를 잇는 이 설계가 교실의 독서·쓰기 문화를 한 단계 끌어올리는 데 기여하기를 기대한다.</div>
+</div>
+
+<!-- ===== 참고문헌 ===== -->
+<div class="chapter">
+  <h2 class="sec"><span class="num">參</span> 참고문헌</h2>
+  <div class="sec-line"></div>
+  <p class="ref">교육부. (2022). <i>2022 개정 초·중등학교 교육과정 — 국어과 교육과정</i>. 교육부 고시 제2022-33호.</p>
+  <p class="ref">교육부·한국교육과정평가원. (2023). <i>2022 개정 교육과정에 따른 과정 중심 평가의 이해와 적용</i>.</p>
+  <p class="ref">한국교육학술정보원. (2023). <i>초등 교사를 위한 KERIS와 시작하는 인공지능 교육</i>.</p>
+  <p class="ref">국내 초·중등 생성형 AI 교육 연구 동향 분석. (2024). <i>한국컴퓨터정보학회 학술발표논문집</i>.</p>
+  <p class="ref">초등학교 대상 생성형 AI 활용 교육 연구 동향 분석. (2024). <i>한국컴퓨터정보학회</i>.</p>
+  <p class="ref">유인근, 박형용. (2023). 초등 국어과 글쓰기 교육을 위한 AI 문장 생성 웹 서비스 개발. <i>교육과정평가연구</i>.</p>
+  <p class="ref">한국교육개발원. (2023). <i>학생 문해력 실태 및 지원 방안 연구</i>.</p>
+  <p class="ref">신원경. (2021). 과정 중심 평가를 위한 초등 쓰기 루브릭 개발 연구. <i>작문연구</i>.</p>
+  <p class="ref">한국교육학술정보원. (2024). <i>디지털 기반 교육혁신과 에듀테크 활용 가이드</i>.</p>
+  <p class="ref">OECD. (2021). <i>21st-Century Readers: Developing Literacy Skills in a Digital World</i>. OECD Publishing.</p>
+  <p class="ref">노명완, 박영목. (2008). <i>문식성 교육 연구</i>. 한국문화사.</p>
+  <p class="ref">Flower, L., &amp; Hayes, J. R. (1981). A cognitive process theory of writing. <i>College Composition and Communication, 32</i>(4), 365–387.</p>
+  <p style="margin-top:14px;font-size:9.6pt"><b>주제어(Keywords)</b> : 독서교육, 독후감 첨삭, 인공지능(AI), 성취수준 루브릭, 과정 중심 평가, 손글씨 OCR, 디지털 문해력</p>
+  <p class="foot-note" style="margin-top:14px">※ 본 보고서의 모든 문장은 연구자가 직접 작성하였으며, 인용은 APA 양식을 따른다. 실제 출품 시 인용 서지는 최종 확인·보완한다.</p>
+</div>
+
+<!-- ===== 부록 ===== -->
+<div class="chapter pbreak">
+  <h2 class="sec"><span class="num">附</span> 부 록</h2>
+  <div class="sec-line"></div>
+
+  <h3><span class="bracket">붙임 1</span>업무분장 및 역할</h3>
+  <table class="tbl"><thead><tr><th style="width:120px">담당</th><th>구체적 역할</th></tr></thead><tbody>
+    <tr><td>주개발 / 설계</td><td>시스템 아키텍처 설계 및 구현, AI 첨삭·OCR 파이프라인 개발, 데이터 모델 설계, 핵심 알고리즘(5축 산정·향상도) 구현</td></tr>
+    <tr><td>교육콘텐츠 / UI</td><td>교육과정 분석 및 성취기준 매핑, 권장도서·루브릭 콘텐츠 기획, UI/UX 디자인, 사용성 테스트 및 개선</td></tr>
+  </tbody></table>
+
+  <h3><span class="bracket">붙임 2</span>멀티미디어 교육자료 목록</h3>
+  <table class="tbl c"><thead><tr><th>번호</th><th>형태</th><th>파일/요소</th><th>설명(키워드)</th><th>비고</th></tr></thead><tbody>
+    <tr><td>1</td><td>벡터</td><td>SVG 캐릭터(부위 합성)</td><td>아바타 6슬롯 장착 시스템</td><td>직접 제작</td></tr>
+    <tr><td>2</td><td>벡터</td><td>성장 단계 아이콘</td><td>씨앗→열매 6단계</td><td>직접 제작</td></tr>
+    <tr><td>3</td><td>데이터</td><td>권장도서 DB</td><td>학년별 추천·인기·대출 Top</td><td>직접 구축</td></tr>
+    <tr><td>4</td><td>폰트</td><td>Pretendard</td><td>본문·UI 서체</td><td>오픈 라이선스(OFL)</td></tr>
+    <tr><td>5</td><td>데이터</td><td>전국 학교 DB</td><td>NEIS 학교 검색 로그인</td><td>공공데이터</td></tr>
+    <tr><td>6</td><td>스크립트</td><td>5축 첨삭 엔진</td><td>루브릭 산정·피드백 생성</td><td>직접 개발</td></tr>
+    <tr><td>7</td><td>스크립트</td><td>OCR 연동 모듈</td><td>비전/브라우저 OCR·이미지 압축</td><td>직접 개발</td></tr>
+    <tr><td>8</td><td>음향</td><td>TTS(읽어주기)</td><td>웹 음성 합성 API 활용</td><td>브라우저 기본</td></tr>
+  </tbody></table>
+
+  <h3><span class="bracket">붙임 3</span>성취기준–기능 매핑표(요약)</h3>
+  <table class="tbl"><thead><tr><th style="width:110px">성취기준</th><th>내용</th><th style="width:160px">연계 기능</th></tr></thead><tbody>
+    <tr><td>[6국02-05]</td><td>긍정적 읽기 동기·태도</td><td>책 발견·포인트·랭킹</td></tr>
+    <tr><td>[6국05-03]</td><td>인물·사건·배경 파악</td><td>5축(내용 이해)·작성 위저드</td></tr>
+    <tr><td>[6국03-03]</td><td>체험에 대한 감상 표현</td><td>5축(감상 표현)</td></tr>
+    <tr><td>[6국05-06]</td><td>작품을 삶과 연관·성찰</td><td>5축(삶과 연결)·발전 제안</td></tr>
+    <tr><td>[6국03-05]</td><td>통일성 있게 고쳐 쓰기</td><td>5축(구성)·고쳐쓰기 향상도</td></tr>
+    <tr><td>[6국04-06]</td><td>표기의 정확성</td><td>5축(맞춤법)·즉시 교정</td></tr>
+    <tr><td>[6국05-04]</td><td>인상적 부분 의견 나누기</td><td>나눔터·독서 토론방</td></tr>
+    <tr><td>[6국03-06]</td><td>글을 독자와 공유</td><td>우수작 공유·응원·명예의 전당</td></tr>
+  </tbody></table>
+
+  <h3><span class="bracket">붙임 4</span>사전 설문지(학생용)</h3>
+  <div class="qz">
+    <div class="qsec">※ 읽기·쓰기에 대한 생각 (① 매우 그렇다 ~ ⑤ 전혀 아니다)</div>
+    <div class="qrow"><span>1. 나는 책 읽기가 즐겁다.</span><span class="qopt">① ② ③ ④ ⑤</span></div>
+    <div class="qrow"><span>2. 나는 독후감(글) 쓰기가 어렵지 않다.</span><span class="qopt">① ② ③ ④ ⑤</span></div>
+    <div class="qrow"><span>3. 나는 내 글을 고쳐 쓰는 것이 도움이 된다고 생각한다.</span><span class="qopt">① ② ③ ④ ⑤</span></div>
+    <div class="qrow"><span>4. 나는 독후감을 쓸 때 무엇을 써야 할지 잘 안다.</span><span class="qopt">① ② ③ ④ ⑤</span></div>
+    <div class="qsec">※ 디지털·AI 학습</div>
+    <div class="qrow"><span>5. 나는 태블릿·컴퓨터로 공부하는 것이 좋다.</span><span class="qopt">① ② ③ ④ ⑤</span></div>
+    <div class="qrow"><span>6. 나는 AI가 도와주는 학습이 편리하다고 생각한다.</span><span class="qopt">① ② ③ ④ ⑤</span></div>
+    <div class="qsec">※ 읽기·쓰기 습관</div>
+    <div class="qrow"><span>7. 나는 스스로 책을 찾아 읽는다.</span><span class="qopt">① ② ③ ④ ⑤</span></div>
+    <div class="qrow"><span>8. 나는 글을 쓴 뒤 다시 읽고 고친다.</span><span class="qopt">① ② ③ ④ ⑤</span></div>
+    <div class="qrow"><span>9. 나는 친구의 글을 읽고 생각을 나눈다.</span><span class="qopt">① ② ③ ④ ⑤</span></div>
+    <div class="qrow"><span>10. 나는 독후감 쓰기에 자신이 있다.</span><span class="qopt">① ② ③ ④ ⑤</span></div>
+  </div>
+
+  <h3><span class="bracket">붙임 5</span>사후 설문지(학생용)</h3>
+  <div class="qz">
+    <div class="qsec">※ 붙임4의 1~10번 문항을 동일하게 응답(사전·사후 비교)</div>
+    <div class="qsec">※ 「책갈피」 사용 경험</div>
+    <div class="qrow"><span>11. 책갈피를 쓴 뒤 독후감 쓰기가 더 재미있어졌다.</span><span class="qopt">① ② ③ ④ ⑤</span></div>
+    <div class="qrow"><span>12. AI 첨삭의 ‘발전 제안’이 글을 고치는 데 도움이 되었다.</span><span class="qopt">① ② ③ ④ ⑤</span></div>
+    <div class="qrow"><span>13. 손글씨 사진 변환(OCR)이 편리했다.</span><span class="qopt">① ② ③ ④ ⑤</span></div>
+    <div class="qsec">※ 자유 응답</div>
+    <div class="qrow"><span>14. 책갈피의 좋은 점은 무엇인가요?</span><span class="qopt">(서술)</span></div>
+    <div class="qrow"><span>15. 더 좋아졌으면 하는 점이 있나요?</span><span class="qopt">(서술)</span></div>
+  </div>
+
+  <h3><span class="bracket">붙임 6</span>활용도 조사 설문지(교사용)</h3>
+  <div class="qz">
+    <div class="qsec">Ⅰ. 활용 현황</div>
+    <div class="qrow"><span>1. 주당 평균 활용 횟수</span><span class="qopt">① 주1 ② 주2~3 ③ 주4~5 ④ 매일</span></div>
+    <div class="qrow"><span>2. 주로 활용한 기능(복수)</span><span class="qopt">OCR·AI첨삭·검토확정·분석·미션·랭킹</span></div>
+    <div class="qsec">Ⅱ. 교육 효과성 (① 매우 만족 ~ ⑤ 매우 불만족)</div>
+    <div class="qrow"><span>3. 업무 부담 경감 효과</span><span class="qopt">① ② ③ ④ ⑤</span></div>
+    <div class="qrow"><span>4. 학생 관리·평가 편의성</span><span class="qopt">① ② ③ ④ ⑤</span></div>
+    <div class="qrow"><span>5. 학생 읽기·쓰기 동기 유발</span><span class="qopt">① ② ③ ④ ⑤</span></div>
+    <div class="qrow"><span>6. 독후감 지도·평가 효과성</span><span class="qopt">① ② ③ ④ ⑤</span></div>
+    <div class="qsec">Ⅲ. 개선 의견</div>
+    <div class="qrow"><span>7. 동료 교사에게 추천하시겠습니까?</span><span class="qopt">① 매우 그렇다 ~ ⑤ 전혀 아니다</span></div>
+    <div class="qrow"><span>8. 장점·개선점·추가 기능 제안</span><span class="qopt">(서술)</span></div>
+  </div>
+
+  <h3><span class="bracket">붙임 7</span>개인정보 수집·이용 동의서(서식)</h3>
+  <div class="qz">
+    <p style="font-size:9.4pt;margin-top:0">「책갈피」는 독서활동 기록을 위해 아래 정보를 수집·이용합니다. (학급 단위 운영, 외부 제공 없음)</p>
+    <div class="qrow"><span><b>수집 항목</b> : 학교·학년·반, 이름(별명), 독후감 본문·사진, 학습 기록(점수·포인트)</span></div>
+    <div class="qrow"><span><b>이용 목적</b> : 독후감 첨삭·평가, 성장 기록 관리, 학급 운영</span></div>
+    <div class="qrow"><span><b>보유 기간</b> : 학년도 종료 후 파기(보호자 요청 시 즉시 파기)</span></div>
+    <div class="qrow"><span>위 개인정보 수집·이용에 동의합니다.</span><span class="qopt">동의함 □ &nbsp; 동의하지 않음 □</span></div>
+    <p style="font-size:9pt;color:var(--mut);margin-top:10px">20 &nbsp;&nbsp; . &nbsp;&nbsp; . &nbsp;&nbsp; . &nbsp;&nbsp;&nbsp; 학생 ( &nbsp;&nbsp;&nbsp; 서명 &nbsp;&nbsp;&nbsp; ) &nbsp;&nbsp;&nbsp; 보호자 ( &nbsp;&nbsp;&nbsp; 서명 &nbsp;&nbsp;&nbsp; )</p>
+  </div>
+
+  <h3><span class="bracket">붙임 8</span>시스템 구성·처리 흐름도</h3>
+  <div class="flow">
+    <div class="fl" style="background:linear-gradient(135deg,#3aa0e0,#2b86c4)"><span class="fi">✍️</span><b>학생 입력</b>손글씨·원고지·키보드</div>
+    <div class="farr">›</div>
+    <div class="fl" style="background:linear-gradient(135deg,#22a3c4,#1d7fa8)"><span class="fi">📷</span><b>OCR·정제</b>비전 모델·브라우저</div>
+    <div class="farr">›</div>
+    <div class="fl" style="background:linear-gradient(135deg,#7c5cf0,#5b3fd0)"><span class="fi">🤖</span><b>AI 첨삭</b>5축 루브릭</div>
+    <div class="farr">›</div>
+    <div class="fl" style="background:linear-gradient(135deg,#f5a93d,#e0871a)"><span class="fi">🧑‍🏫</span><b>교사 확정</b>검토·코멘트</div>
+    <div class="farr">›</div>
+    <div class="fl" style="background:linear-gradient(135deg,#2fc89b,#1aa67c)"><span class="fi">🌱</span><b>성장·공유</b>포인트·랭킹</div>
+  </div>
+  <p class="foot-note">데이터는 학급(학교·학년·반) 단위로 관리되며, AI 호출은 학생에게 노출되지 않는다. 각 단계는 교체형 모듈로 분리되어 점진적 고도화가 가능하다.</p>
+
+  <h3><span class="bracket">붙임 9</span>주요 화면 모음</h3>
+  <div class="shot3">
+    <img src="home.png"><img src="write.png"><img src="locker.png">
+    <img src="ocr.png"><img src="learn.png"><img src="podium.png">
+    <img src="teacher.png"><img src="review.png"><img src="hall.png">
+    <img src="diff.png"><img src="admin_stats.png"><img src="lib_dash.png">
+  </div>
+  <div class="cap">학생 홈 · AI 첨삭 · 아바타 사물함 / 손글씨 OCR · 단계 학습 · 포디움 랭킹 / 교사 대시보드 · 독후감 검토 · 명예의 전당 / 고쳐쓰기 Diff · 교무관리자 통계 · 사서교사 대시보드</div>
+
+  <h3><span class="bracket">붙임 10</span>성취수준 5축 루브릭 채점 기준표</h3>
+  <p class="lead">독후감을 5개 축으로 진단하는 채점 기준이다. AI가 각 축을 A·B·C로 진단하고, 교사가 조정·확정한다.</p>
+  <table class="tbl"><thead><tr><th style="width:70px">축</th><th>A (도달)</th><th>B (부분 도달)</th><th>C (미흡)</th></tr></thead><tbody>
+    <tr><td>내용 이해</td><td>인물·사건·배경을 정확히 파악해 줄거리를 짜임새 있게 정리</td><td>주요 내용을 대체로 파악하나 일부 누락·혼동</td><td>줄거리 파악이 단편적이거나 부정확</td></tr>
+    <tr><td>감상 표현</td><td>인상 깊은 점과 그 까닭을 구체적·풍부하게 표현</td><td>감상을 표현하나 까닭이 단순함</td><td>감상이 막연하거나 ‘재미있었다’ 수준에 머묾</td></tr>
+    <tr><td>삶과 연결</td><td>작품을 자신의 경험·삶과 적극 연관 지어 성찰</td><td>연결을 시도하나 피상적임</td><td>삶과의 연결이 거의 드러나지 않음</td></tr>
+    <tr><td>구성·근거</td><td>문단이 통일성 있고 근거·연결어가 자연스러움</td><td>구성은 갖췄으나 흐름·근거가 약함</td><td>문장이 나열식이거나 흐름이 끊김</td></tr>
+    <tr><td>맞춤법</td><td>표기·띄어쓰기 오류가 거의 없음</td><td>오류가 있으나 의미 전달에는 지장이 없음</td><td>오류가 잦아 의미 전달을 방해함</td></tr>
+  </tbody></table>
+  <p class="foot-note">※ 5축 평균으로 성취수준(A≥4.0 · B≥2.8 · C)을 산출하며, ‘발전’ 피드백은 B→A 도달을 위한 사고 확장 질문·제안으로 제시된다.</p>
+
+  <h3><span class="bracket">붙임 11</span>하위 기능 명세 일람</h3>
+  <table class="tbl"><thead><tr><th style="width:110px">영역</th><th>하위 기능</th></tr></thead><tbody>
+    <tr><td>내 서재(홈)</td><td>캐릭터·레벨/칭호·마스터 도달률, 성장 그래프, 독서 나무, 뱃지, 책 발견 캐러셀(학년·이달·인기·대출 Top), 미션/챌린지 카드, 내 독후감 목록</td></tr>
+    <tr><td>독후감 쓰기</td><td>키보드 입력, 원고지(200칸), 사진 OCR, 권장도서 선택, 중간 검사, AI 5축 첨삭, 맞춤법 즉시 교정, 음성 입력(STT), 읽어주기(TTS), 쉬운 말 모드, 고쳐쓰기</td></tr>
+    <tr><td>단계 학습</td><td>6단계 레벨 패스(씨앗→열매), 5단계 작성 위저드(성취기준 연계)</td></tr>
+    <tr><td>독서게임</td><td>골든벨, 밸런스 게임, 빙고, 책 퀴즈, 퀴즈 대결, 어휘게임, 인물맞히기, 마라톤 (8종)</td></tr>
+    <tr><td>나눔터</td><td>우수작 게시판·또래 응원, 독서 토론방</td></tr>
+    <tr><td>상점</td><td>아바타 사물함(6슬롯 장착), 미리보기·구매·착용</td></tr>
+    <tr><td>랭킹·대회</td><td>우리 반·학교·전국 포디움, 챌린지, 명예의 전당</td></tr>
+    <tr><td>교사 콘솔</td><td>학급 대시보드, 5축 분석 인사이트, 독후감 검토·확정, 원본 열람, 진위 점검, 일괄 승인, 학생 관리·비번 초기화, 포인트 지급, 미션 개설, 표창장·가정통신문·CSV</td></tr>
+  </tbody></table>
+
+  <h3><span class="bracket">붙임 12</span>AI 5축 첨삭 출력 구조(예시)</h3>
+  <p class="lead">AI 첨삭 모듈은 아래와 같은 구조화된 결과를 반환하여, 화면 표시·점수 산정·교사 확정에 일관되게 활용된다.</p>
+  <div class="qz" style="font-family:'Courier New',monospace;font-size:8.8pt;line-height:1.7;color:#2b3850;background:#fbfcff">
+    { "rubric": { "내용이해": 5, "감상표현": 4, "삶과연결": 5, "구성근거": 4, "맞춤법": 4 },<br>
+    &nbsp;&nbsp;"성취수준": "A", &nbsp;"평균": 4.4,<br>
+    &nbsp;&nbsp;"칭찬": [ "인물의 변화를 정확히 이해함", "경험과 잘 연결함" ],<br>
+    &nbsp;&nbsp;"개선": [ "장면 묘사를 한 문장 더 구체적으로" ],<br>
+    &nbsp;&nbsp;"발전": [ "‘나도 거름이 된 적이 있을까’ 자문하며 한 문단 확장 [6국05-06]" ],<br>
+    &nbsp;&nbsp;"맞춤법교정": [ { "오류": "쓸모 없다", "수정": "쓸모없다" } ] }
+  </div>
+  <p class="foot-note">※ AI 키가 없을 경우 동일한 출력 구조를 규칙 기반 휴리스틱으로 산출하여 무중단으로 동작한다.</p>
+
+  <h3><span class="bracket">붙임 13</span>교사 빠른 시작 가이드</h3>
+  <table class="tbl c"><thead><tr><th style="width:60px">단계</th><th>교사 활동</th><th style="width:90px">소요</th></tr></thead><tbody>
+    <tr><td>1</td><td>담임으로 가입(학교·학년·반 선택) — AI는 기본 제공, 키 설정 불필요</td><td>약 2분</td></tr>
+    <tr><td>2</td><td>학생 가입 안내(같은 학급 자동 편성) 또는 직접 추가</td><td>약 5분</td></tr>
+    <tr><td>3</td><td>이달의 책·미션 개설(도서·기간 지정)</td><td>약 2분</td></tr>
+    <tr><td>4</td><td>학생 독후감 제출 → 검토·확정(5축 조정·코멘트)</td><td>편당 1~2분</td></tr>
+    <tr><td>5</td><td>학급 분석으로 약점 진단 → 수업 설계, 표창장 발급</td><td>상시</td></tr>
+  </tbody></table>
+  <p class="foot-note">※ 별도 설치나 키 발급 없이 웹 접속만으로 즉시 운영할 수 있다(AI는 서비스에 기본 내장).</p>
+
+  <h3><span class="bracket">붙임 14</span>성취수준별 독후감 예시</h3>
+  <table class="tbl"><thead><tr><th style="width:54px">수준</th><th>독후감 예시 — 「마당을 나온 암탉」</th><th style="width:150px">진단 요약</th></tr></thead><tbody>
+    <tr><td class="em" style="text-align:center">A</td><td>“잎싹은 알을 품는 꿈을 위해 마당을 나왔다. 두렵지만 자유를 선택한 잎싹이 멋졌다. 나도 피아노를 그만두고 싶을 때가 있었는데, 잎싹처럼 내가 정말 원하는 걸 용기 내어 지켜야겠다고 생각했다.”</td><td>내용·삶 연결·구성 모두 우수, 경험을 구체적으로 연결</td></tr>
+    <tr><td class="em" style="text-align:center">B</td><td>“잎싹이 마당을 나와서 알을 품었다. 자유를 찾아서 멋있었다. 나도 용기를 내야겠다고 생각했다.”</td><td>줄거리·감상은 있으나 까닭·경험이 단순</td></tr>
+    <tr><td class="em" style="text-align:center">C</td><td>“마당을 나온 암탉을 읽었다. 재미있었다. 잎싹이 나온다.”</td><td>줄거리·감상이 단편적, 발전 제안 우선 필요</td></tr>
+  </tbody></table>
+  <p class="foot-note">※ 같은 도서라도 수준에 따라 첨삭의 ‘발전 제안’ 초점이 달라진다(C→줄거리·감상 구체화, B→경험 연결, A→사고 심화).</p>
+
+  <div class="call key" style="margin-top:22px"><b class="h">「책갈피」 개발 연구보고서</b>
+  제20회 정보화연구대회(디지털교육연구대회) · 교육용 SW·AI 분과 · 초등 국어 · 프로토타입 v0.7 · 2026</div>
+</div>
+
+</body>
+</html>
