@@ -1670,7 +1670,9 @@ let fbFinal=false, lastFbRev=null, pendingRev=null;
    devKey   : 로컬 테스트 전용. 배포 빌드에는 절대 넣지 말 것(클라이언트 JS에 그대로 노출됨).
    둘 다 비우면 규칙기반 첨삭·브라우저 OCR로 자동 폴백한다. =============================== */
 /* 함수 주소는 절대 URL — 미리보기 패널·로컬 파일(file://)·단일파일·폰 어디서 열어도 작동(함수 CORS 허용). 운영 도메인 바뀌면 이 둘만 교체 */
-const FN_BASE = 'https://chaekgalpi.vercel.app/api';
+const FN_BASE = (location.hostname==='localhost'||location.hostname.endsWith('github.io'))
+  ? 'https://chaekgalpi-one.vercel.app/api'
+  : '/api';
 const AI_CONFIG = { proxyUrl: FN_BASE+'/gemini', devKey: '', spellUrl: FN_BASE+'/spell' };
 function aiAvailable(){return !!(AI_CONFIG.proxyUrl||AI_CONFIG.devKey);}
 const GEMINI_MODEL='gemini-2.5-flash';
