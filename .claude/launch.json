@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "chaekgalpi",
+      "runtimeExecutable": "python",
+      "runtimeArgs": ["-m", "http.server", "8737", "-d", "prototype"],
+      "port": 8737
+    }
+  ]
+}

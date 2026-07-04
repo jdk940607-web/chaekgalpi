@@ -251,6 +251,26 @@ input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px soli
 .invcell .nm{font-weight:700;font-size:12px;margin-top:3px;color:#14264a}
 .invcell .price{font-size:11.5px;font-weight:800;color:#c2410c;font-variant-numeric:tabular-nums}
 @media(max-width:600px){.invgrid{grid-template-columns:repeat(3,1fr)}.locker-doll{width:100%}}
+/* ===== 캐릭터 생동감 — 숨쉬기·눈 깜빡임 (expoOut 계열 이징, 절제 원칙) ===== */
+@keyframes chBreath{0%,100%{transform:translateY(0)}50%{transform:translateY(-1.8px)}}
+@keyframes chBlink{0%,90%,100%{transform:scaleY(1)}93%,95%{transform:scaleY(.1)}}
+@keyframes chShadow{0%,100%{transform:scaleX(1);opacity:.07}50%{transform:scaleX(.94);opacity:.05}}
+.ch-anim .ch-body{animation:chBreath 3.2s ease-in-out infinite;transform-box:fill-box;transform-origin:50% 100%}
+.ch-anim .ch-eyes{animation:chBlink 4.6s ease-in-out infinite;transform-box:fill-box;transform-origin:center}
+.ch-anim .ch-shadow{animation:chShadow 3.2s ease-in-out infinite;transform-box:fill-box;transform-origin:center}
+.doll-stage{background:radial-gradient(ellipse 95% 55% at 50% 92%,#eaf6fd 0%,#fff 60%);min-height:256px}
+/* ===== 상점 희귀도 등급 ===== */
+.invcell{transition:transform .18s cubic-bezier(.2,.7,.3,1),border-color .18s,box-shadow .18s}
+.invcell:hover{transform:translateY(-3px);border-color:var(--sky);box-shadow:0 6px 16px rgba(13,27,58,.09)}
+.invcell.r2{border-color:#bcd8f0;background:linear-gradient(180deg,#fbfdff,#f2f8fe)}
+.invcell.r3{border-color:#f0d98c;background:linear-gradient(180deg,#fffdf4,#fff7dd)}
+.invcell.r3::after{content:'✨';position:absolute;top:5px;right:7px;font-size:11px;pointer-events:none}
+/* ===== 전역 모션 — 카드 등장·버튼 프레스 ===== */
+@keyframes cardIn{from{opacity:0;transform:translateY(9px)}to{opacity:1;transform:none}}
+.card{animation:cardIn .32s cubic-bezier(.2,.7,.3,1) both}
+.btn:active{transform:scale(.96)}
+.seg button{transition:background .15s,color .15s}
+@media(prefers-reduced-motion:reduce){.ch-anim .ch-body,.ch-anim .ch-eyes,.ch-anim .ch-shadow,.card{animation:none!important}}
 /* ===================== 모바일 대응 ===================== */
 .logo{white-space:nowrap;flex:none}
 html,body{overflow-x:hidden}
@@ -381,75 +401,139 @@ let db, session=null;
 
 function mkStudent(school,grade,cls,name,pts){return{id:'u'+Math.random().toString(36).slice(2,9),role:'student',schoolCode:school.c,schoolName:school.n,region:school.r,gu:school.g,grade,classNo:cls,name,pw:'1234',points:pts,avatar:rnd(AVS),items:[],wear:{hair:rnd(['h_short_br','h_short_bk','h_bob','h_pony']),hat:'',top:rnd(['t_sky','t_white']),bottom:rnd(['b_navy','b_black']),shoes:'s_white',acc:''},lvl:lvlOf(pts),badges:[],mode:'normal'};}
 /* ===== 사람 SVG 아바타 — 베이스 몸 + 헤어/모자/상의/하의/신발/액세서리 레이어 ===== */
-const SKIN='#f5c49a', SKINSH='#e7ad81';
+const SKIN='#f6cba6', SKINSH='#e5ab7f';
+/* 5등신 일러스트 비율 — 곡선 팔다리(stroke 기법), 목·어깨라인, 얼굴 디테일.
+   좌표계: viewBox 0 0 100 200. 머리 y7~42, 몸통 y50~95, 다리 y95~167, 신발 ~183 */
 function bodyBase(){return ''
- +`<rect x="40.5" y="95" width="8.6" height="41" rx="4.3" fill="${SKIN}"/><rect x="50.9" y="95" width="8.6" height="41" rx="4.3" fill="${SKIN}"/>`
- +`<rect x="24" y="59" width="8" height="30" rx="4" fill="${SKIN}"/><rect x="68" y="59" width="8" height="30" rx="4" fill="${SKIN}"/>`
- +`<path d="M33 57 Q33 54 37 54 L63 54 Q67 54 67 57 L66 93 Q66 98 60 98 L40 98 Q34 98 34 93 Z" fill="${SKIN}"/>`
- +`<rect x="44.5" y="47" width="11" height="10" rx="3.2" fill="${SKIN}"/><rect x="44.5" y="47" width="11" height="4" rx="2" fill="${SKINSH}" opacity=".5"/>`
- +`<circle cx="29.5" cy="34" r="3.8" fill="${SKIN}"/><circle cx="70.5" cy="34" r="3.8" fill="${SKIN}"/>`
- +`<circle cx="50" cy="33" r="20" fill="${SKIN}"/>`;}
-function face(){return `<ellipse cx="43" cy="34" rx="2.4" ry="2.8" fill="#3a2a1a"/><ellipse cx="57" cy="34" rx="2.4" ry="2.8" fill="#3a2a1a"/>`
- +`<circle cx="43.8" cy="33.1" r=".8" fill="#fff"/><circle cx="57.8" cy="33.1" r=".8" fill="#fff"/>`
- +`<path d="M45 41 Q50 45 55 41" stroke="#bb6a38" stroke-width="2" fill="none" stroke-linecap="round"/>`
- +`<circle cx="38.5" cy="39" r="2.7" fill="#ff9aa2" opacity=".45"/><circle cx="61.5" cy="39" r="2.7" fill="#ff9aa2" opacity=".45"/>`;}
+ // 다리 (곡선 스트로크)
+ +`<path d="M43.5 92 L42.7 166" stroke="${SKIN}" stroke-width="10" stroke-linecap="round" fill="none"/>`
+ +`<path d="M56.5 92 L57.3 166" stroke="${SKIN}" stroke-width="10" stroke-linecap="round" fill="none"/>`
+ // 팔 (자연스럽게 늘어뜨림)
+ +`<path d="M32.5 56 Q26.8 76 27.7 97" stroke="${SKIN}" stroke-width="7.5" stroke-linecap="round" fill="none"/>`
+ +`<path d="M67.5 56 Q73.2 76 72.3 97" stroke="${SKIN}" stroke-width="7.5" stroke-linecap="round" fill="none"/>`
+ +`<circle cx="27.7" cy="98.5" r="4" fill="${SKIN}"/><circle cx="72.3" cy="98.5" r="4" fill="${SKIN}"/>`
+ // 목 + 그림자
+ +`<path d="M46 36 L46 50 Q50 53 54 50 L54 36Z" fill="${SKIN}"/>`
+ +`<path d="M46 38 Q50 41.5 54 38 L54 42.5 Q50 45.5 46 42.5Z" fill="${SKINSH}" opacity=".38"/>`
+ // 몸통 (어깨 경사)
+ +`<path d="M33.5 52 Q50 45.5 66.5 52 L64 93 Q50 98 36 93 Z" fill="${SKIN}"/>`
+ // 귀
+ +`<ellipse cx="35" cy="26.5" rx="2.6" ry="3.6" fill="${SKIN}"/><ellipse cx="65" cy="26.5" rx="2.6" ry="3.6" fill="${SKIN}"/>`
+ +`<ellipse cx="35.2" cy="26.5" rx="1" ry="1.6" fill="${SKINSH}" opacity=".55"/><ellipse cx="64.8" cy="26.5" rx="1" ry="1.6" fill="${SKINSH}" opacity=".55"/>`
+ // 얼굴 (계란형 + 턱 음영)
+ +`<path d="M50 7.5 Q65.5 7.5 65.5 24 Q65.5 34.5 57.5 40 Q53.5 42.5 50 42.5 Q46.5 42.5 42.5 40 Q34.5 34.5 34.5 24 Q34.5 7.5 50 7.5Z" fill="${SKIN}"/>`
+ +`<path d="M42.5 40 Q34.5 34.5 34.5 24 Q34.8 31 40.5 36.5Z" fill="${SKINSH}" opacity=".14"/>`;}
+function face(){return ''
+ // 눈썹
+ +`<path d="M40 20.6 Q43.5 19 46.5 20.3" stroke="#4a3626" stroke-width="1.6" fill="none" stroke-linecap="round"/>`
+ +`<path d="M53.5 20.3 Q56.5 19 60 20.6" stroke="#4a3626" stroke-width="1.6" fill="none" stroke-linecap="round"/>`
+ // 눈 (홍채·하이라이트·윗속눈썹 라인)
+ +`<g class="ch-eyes"><ellipse cx="44" cy="26" rx="2.5" ry="2.9" fill="#241b14"/><ellipse cx="56" cy="26" rx="2.5" ry="2.9" fill="#241b14"/>`
+ +`<circle cx="44.9" cy="24.9" r=".95" fill="#fff"/><circle cx="56.9" cy="24.9" r=".95" fill="#fff"/>`
+ +`<path d="M41 23.6 Q44 22 47 23.4" stroke="#241b14" stroke-width=".9" fill="none" opacity=".5"/><path d="M53 23.4 Q56 22 59 23.6" stroke="#241b14" stroke-width=".9" fill="none" opacity=".5"/></g>`
+ // 코 (은은한 라인)
+ +`<path d="M49.4 29 Q50.9 30.8 49.7 32.2" stroke="${SKINSH}" stroke-width="1.3" fill="none" stroke-linecap="round"/>`
+ // 입 (윗라인 + 아랫입술 힌트)
+ +`<path d="M46.3 35.2 Q50 38 53.7 35.2" stroke="#c96b52" stroke-width="1.8" fill="none" stroke-linecap="round"/>`
+ +`<path d="M47.5 38 Q50 39.2 52.5 38" stroke="#e8a08d" stroke-width="1.1" fill="none" stroke-linecap="round" opacity=".65"/>`
+ // 볼터치 (은은)
+ +`<ellipse cx="39.5" cy="31" rx="2.6" ry="1.7" fill="#ff9d92" opacity=".3"/><ellipse cx="60.5" cy="31" rx="2.6" ry="1.7" fill="#ff9d92" opacity=".3"/>`;}
 const PARTS={
- hair:{short:c=>`<path d="M28 36 Q26 12 50 11 Q74 12 72 36 Q70 22 50 20 Q30 22 30 36 Z" fill="${c}"/>`,
-  long:c=>`<path d="M27 40 Q24 10 50 10 Q76 10 73 40 L73 64 L66 64 L66 34 Q50 22 34 34 L34 64 L27 64 Z" fill="${c}"/>`,
-  ponytail:c=>`<path d="M70 24 Q86 30 81 50 Q79 58 72 53 Q79 40 69 31 Z" fill="${c}"/><path d="M28 36 Q26 12 50 11 Q74 12 72 36 Q70 22 50 20 Q30 22 30 36 Z" fill="${c}"/>`,
-  curly:c=>`<circle cx="32" cy="26" r="7" fill="${c}"/><circle cx="42" cy="19" r="8" fill="${c}"/><circle cx="55" cy="18" r="8" fill="${c}"/><circle cx="66" cy="24" r="7" fill="${c}"/><path d="M30 34 Q30 22 50 20 Q70 22 70 34 Q60 26 50 26 Q40 26 30 34Z" fill="${c}"/>`,
-  bob:c=>`<path d="M27 46 Q26 12 50 11 Q74 12 73 46 L66 46 L66 34 Q50 22 34 34 L34 46 Z" fill="${c}"/>`},
- hat:{cap:c=>`<path d="M26 28 Q50 -4 74 28 Q50 32 26 28 Z" fill="${c}"/>`
-   +`<path d="M48 29 Q72 26 83 31 Q74 35 48 33 Z" fill="${c}"/>`
-   +`<path d="M26 28 Q50 32 74 28" fill="none" stroke="#000" stroke-opacity=".09" stroke-width="1.6"/>`
-   +`<circle cx="50" cy="8" r="3" fill="${c}"/>`,
-  beanie:c=>`<path d="M28 29 Q28 7 50 6 Q72 7 72 29 Z" fill="${c}"/>`
-   +`<rect x="26" y="25" width="48" height="7.5" rx="3.7" fill="${c}"/>`
-   +`<rect x="26" y="25" width="48" height="3.4" rx="1.7" fill="#ffffff" opacity=".22"/>`
-   +`<circle cx="50" cy="6.5" r="4" fill="#ffffff" opacity=".5"/>`,
-  crown:c=>`<path d="M31 25 L38 9 L44 19 L50 7 L56 19 L62 9 L69 25 Z" fill="${c}"/>`
-   +`<rect x="31" y="23" width="38" height="5" rx="1.5" fill="${c}"/>`
-   +`<circle cx="38" cy="10" r="1.7" fill="#fff" opacity=".75"/><circle cx="50" cy="8" r="1.9" fill="#fff" opacity=".75"/><circle cx="62" cy="10" r="1.7" fill="#fff" opacity=".75"/>`,
-  ribbon:c=>`<path d="M50 16 L38 9 L38 23 Z" fill="${c}"/><path d="M50 16 L62 9 L62 23 Z" fill="${c}"/>`
-   +`<circle cx="50" cy="16" r="3.8" fill="${c}"/><circle cx="50" cy="16" r="1.7" fill="#ffffff" opacity=".55"/>`,
-  straw:c=>`<ellipse cx="50" cy="24" rx="31" ry="6.2" fill="${c}"/>`
-   +`<path d="M37 25 Q37 8 50 7 Q63 8 63 25 Z" fill="${c}"/>`
-   +`<rect x="37" y="19" width="26" height="3.6" rx="1.8" fill="#000" opacity=".13"/>`},
+ hair:{
+  short:c=>`<path d="M33.8 28 Q32 4.5 50 4.5 Q68 4.5 66.2 28 L64.5 28 Q65 15.5 57.5 12 Q59.5 17 54.5 14.5 Q46.5 10.8 40 16 Q35.8 19.5 35.5 28Z" fill="${c}"/>`
+   +`<path d="M39 10.5 Q46 6.8 55 8.5" stroke="#fff" stroke-opacity=".22" stroke-width="2.2" fill="none" stroke-linecap="round"/>`,
+  long:c=>`<path d="M31.5 58 Q28.5 4 50 4 Q71.5 4 68.5 58 Q68 62 64.5 60 L63.5 30 Q62 17.5 54 14.8 Q45 12 39.5 17.5 Q36.5 21 36.5 30 L35.5 60 Q32 62 31.5 58Z" fill="${c}"/>`
+   +`<path d="M38.5 10.5 Q45.5 6.8 54.5 8.5" stroke="#fff" stroke-opacity=".22" stroke-width="2.2" fill="none" stroke-linecap="round"/>`
+   +`<path d="M36 36 Q35.5 47 35.8 56 M64 36 Q64.5 47 64.2 56" stroke="#000" stroke-opacity=".08" stroke-width="1.6" fill="none"/>`,
+  ponytail:c=>`<path d="M63.5 13 Q76.5 18.5 73.5 41 Q72 50.5 66.5 44.5 Q70.5 31 61 20.5Z" fill="${c}"/>`
+   +`<ellipse cx="64.8" cy="16.5" rx="2.4" ry="2.8" fill="#fff" opacity=".28"/>`
+   +`<path d="M33.8 28 Q32 4.5 50 4.5 Q68 4.5 66.2 28 L64.5 28 Q65 15.5 57.5 12 Q59.5 17 54.5 14.5 Q46.5 10.8 40 16 Q35.8 19.5 35.5 28Z" fill="${c}"/>`,
+  curly:c=>`<circle cx="37" cy="14" r="6" fill="${c}"/><circle cx="46" cy="9.5" r="6.5" fill="${c}"/><circle cx="56" cy="10" r="6.5" fill="${c}"/><circle cx="63.5" cy="15.5" r="5.5" fill="${c}"/><circle cx="66" cy="23" r="4.8" fill="${c}"/><circle cx="34" cy="21.5" r="5" fill="${c}"/>`
+   +`<path d="M34.5 27 Q35 14 50 12.5 Q65 14 65.5 27 Q57.5 19 50 19 Q42.5 19 34.5 27Z" fill="${c}"/>`,
+  bob:c=>`<path d="M33.5 40 Q31 4.5 50 4.5 Q69 4.5 66.5 40 Q65.5 43.5 63 41.5 Q64.5 21 57.5 16.5 Q51.5 13 43.5 16 Q35.8 19.5 37 41.5 Q34.5 43.5 33.5 40Z" fill="${c}"/>`
+   +`<path d="M38.5 10.5 Q45.5 6.8 54.5 8.5" stroke="#fff" stroke-opacity=".22" stroke-width="2.2" fill="none" stroke-linecap="round"/>`},
+ hat:{
+  cap:c=>`<path d="M32.5 22.5 Q33.5 3 50 3 Q66.5 3 67.5 22.5 Q50 18.5 32.5 22.5Z" fill="${c}"/>`
+   +`<ellipse cx="50" cy="23.2" rx="19" ry="4" fill="${c}"/>`
+   +`<ellipse cx="50" cy="24.3" rx="19" ry="3" fill="#000" opacity=".14"/>`
+   +`<path d="M42.5 5.5 L45.5 20 M57.5 5.5 L54.5 20" stroke="#000" stroke-opacity=".09" stroke-width="1.3" fill="none"/>`
+   +`<circle cx="50" cy="3.5" r="2.4" fill="${c}"/><circle cx="50" cy="3.5" r="2.4" fill="#fff" opacity=".25"/>`,
+  beanie:c=>`<path d="M33 24 Q33 2.5 50 2.2 Q67 2.5 67 24Z" fill="${c}"/>`
+   +`<rect x="31.8" y="19.5" width="36.4" height="7.5" rx="3.7" fill="${c}"/>`
+   +`<rect x="31.8" y="19.5" width="36.4" height="3.2" rx="1.6" fill="#fff" opacity=".22"/>`
+   +`<path d="M40.5 18 Q41.5 8.5 46.5 6 M50 17.5 Q50 9 50 5 M59.5 18 Q58.5 8.5 53.5 6" stroke="#000" stroke-opacity=".08" stroke-width="1.7" fill="none"/>`
+   +`<circle cx="50" cy="2" r="3.6" fill="${c}"/><circle cx="50" cy="2" r="3.6" fill="#fff" opacity=".45"/>`,
+  crown:c=>`<path d="M36 16 L39.5 4 L45 11 L50 2.5 L55 11 L60.5 4 L64 16Z" fill="${c}"/>`
+   +`<rect x="36" y="14.5" width="28" height="5" rx="2" fill="${c}"/>`
+   +`<rect x="36" y="14.5" width="28" height="5" rx="2" fill="#000" opacity=".08"/>`
+   +`<circle cx="39.8" cy="5.5" r="1.5" fill="#fff" opacity=".8"/><circle cx="50" cy="3.8" r="1.7" fill="#fff" opacity=".85"/><circle cx="60.2" cy="5.5" r="1.5" fill="#fff" opacity=".8"/>`
+   +`<circle cx="43" cy="17" r="1.3" fill="#e0504f"/><circle cx="50" cy="17" r="1.3" fill="#3a78c2"/><circle cx="57" cy="17" r="1.3" fill="#3aa76d"/>`,
+  ribbon:c=>`<path d="M61 9.5 L51.5 5 L53.5 14Z" fill="${c}"/><path d="M61 9.5 L70.5 5.5 L68.5 14.5Z" fill="${c}"/>`
+   +`<circle cx="61" cy="10" r="3.2" fill="${c}"/><circle cx="60" cy="9" r="1.2" fill="#fff" opacity=".55"/>`,
+  straw:c=>`<ellipse cx="50" cy="19" rx="26" ry="5.5" fill="${c}"/>`
+   +`<ellipse cx="50" cy="20.2" rx="26" ry="4.2" fill="#000" opacity=".07"/>`
+   +`<path d="M38 18 Q38 2.5 50 2.2 Q62 2.5 62 18Z" fill="${c}"/>`
+   +`<rect x="38" y="13.5" width="24" height="3.8" rx="1.9" fill="#c0392b" opacity=".72"/>`},
  top:{
-  tshirt:c=>`<rect x="23.2" y="55" width="11" height="16" rx="5" fill="${c}"/><rect x="65.8" y="55" width="11" height="16" rx="5" fill="${c}"/>`
-   +`<path d="M32 57 Q32 54 36 54 L64 54 Q68 54 68 57 L67 92 Q67 97 61 97 L39 97 Q33 97 33 92 Z" fill="${c}"/>`,
-  hoodie:c=>`<rect x="22.5" y="55" width="11" height="30" rx="5" fill="${c}"/><rect x="66.5" y="55" width="11" height="30" rx="5" fill="${c}"/>`
-   +`<path d="M31 57 Q31 53 36 53 L64 53 Q69 53 69 57 L68 94 Q68 99 62 99 L38 99 Q32 99 32 94 Z" fill="${c}"/>`
-   +`<path d="M39 53 Q50 62 61 53 L60 58 Q50 66 40 58 Z" fill="#000" opacity=".10"/>`
-   +`<rect x="41" y="79" width="18" height="11" rx="4" fill="#000" opacity=".09"/><rect x="49" y="56" width="2" height="11" rx="1" fill="#000" opacity=".12"/>`,
-  dress:c=>`<rect x="24" y="55" width="10" height="15" rx="5" fill="${c}"/><rect x="66" y="55" width="10" height="15" rx="5" fill="${c}"/>`
-   +`<path d="M33 57 Q33 54 37 54 L63 54 Q67 54 67 57 L69 75 L31 75 Z" fill="${c}"/>`
-   +`<path d="M31 74 L69 74 Q80 100 76 110 Q50 116 24 110 Q20 100 31 74 Z" fill="${c}"/>`,
-  vest:c=>`<path d="M35 56 L48 56 L50 61 L52 56 L65 56 Q67 56 67 59 L66 93 Q66 97 61 97 L39 97 Q34 97 34 93 Z" fill="${c}"/>`
-   +`<path d="M50 61 L50 96" stroke="#000" stroke-opacity=".12" stroke-width="1.4"/>`,
-  stripe:c=>`<rect x="23.2" y="55" width="11" height="16" rx="5" fill="${c}"/><rect x="65.8" y="55" width="11" height="16" rx="5" fill="${c}"/>`
-   +`<path d="M32 57 Q32 54 36 54 L64 54 Q68 54 68 57 L67 92 Q67 97 61 97 L39 97 Q33 97 33 92 Z" fill="${c}"/>`
-   +`<path d="M33 66 L67 66 M33 74 L67 74 M33 82 L67 82" stroke="#fff" stroke-opacity=".55" stroke-width="3.2"/>`},
+  tshirt:c=>`<path d="M32.5 55 Q29.6 63.5 29.9 72.5" stroke="${c}" stroke-width="10" stroke-linecap="round" fill="none"/><path d="M67.5 55 Q70.4 63.5 70.1 72.5" stroke="${c}" stroke-width="10" stroke-linecap="round" fill="none"/>`
+   +`<path d="M32.8 52.5 Q50 46 67.2 52.5 L64.8 94 Q50 99 35.2 94Z" fill="${c}"/>`
+   +`<path d="M44 49.8 Q50 53.8 56 49.8" fill="none" stroke="#000" stroke-opacity=".14" stroke-width="1.7"/>`
+   +`<path d="M40 87 Q43.5 89.5 47.5 89 M53 91.5 Q57 91.5 60 89.5" stroke="#000" stroke-opacity=".08" stroke-width="1.4" fill="none"/>`,
+  hoodie:c=>`<path d="M32.5 55 Q26.9 76 27.8 95" stroke="${c}" stroke-width="10.5" stroke-linecap="round" fill="none"/><path d="M67.5 55 Q73.1 76 72.2 95" stroke="${c}" stroke-width="10.5" stroke-linecap="round" fill="none"/>`
+   +`<path d="M32.5 52 Q50 45 67.5 52 L65.2 96.5 Q50 101.5 34.8 96.5Z" fill="${c}"/>`
+   +`<path d="M40 48.5 Q50 58 60 48.5 L59 55 Q50 62.5 41 55Z" fill="#000" opacity=".13"/>`
+   +`<path d="M42 78 L58 78 L55.8 92 L44.2 92Z" fill="#000" opacity=".1"/>`
+   +`<line x1="46.8" y1="56" x2="46.8" y2="64" stroke="#fff" stroke-opacity=".55" stroke-width="1.5"/><line x1="53.2" y1="56" x2="53.2" y2="64" stroke="#fff" stroke-opacity=".55" stroke-width="1.5"/>`,
+  dress:c=>`<path d="M32.5 55 Q30 61.5 30.2 68" stroke="${c}" stroke-width="9.5" stroke-linecap="round" fill="none"/><path d="M67.5 55 Q70 61.5 69.8 68" stroke="${c}" stroke-width="9.5" stroke-linecap="round" fill="none"/>`
+   +`<path d="M32.8 52.5 Q50 46 67.2 52.5 L65.5 79 Q71.5 104 68.5 116 Q50 121.5 31.5 116 Q28.5 104 34.5 79Z" fill="${c}"/>`
+   +`<path d="M34.8 80 Q50 84.5 65.2 80" stroke="#fff" stroke-opacity=".45" stroke-width="2" fill="none"/>`
+   +`<path d="M41 115 L43.5 84 M50 117 L50 85.5 M59 115 L56.5 84" stroke="#000" stroke-opacity=".06" stroke-width="1.5" fill="none"/>`,
+  vest:c=>`<path d="M36 52 L46.5 50.2 L50 57.5 L53.5 50.2 L64 52 L62.3 93 Q50 97.5 37.7 93Z" fill="${c}"/>`
+   +`<path d="M50 57.5 L50 95.5" stroke="#000" stroke-opacity=".14" stroke-width="1.4"/>`
+   +`<circle cx="46.8" cy="66" r="1.2" fill="#000" opacity=".22"/><circle cx="46.8" cy="76" r="1.2" fill="#000" opacity=".22"/>`,
+  stripe:c=>`<path d="M32.5 55 Q29.6 63.5 29.9 72.5" stroke="${c}" stroke-width="10" stroke-linecap="round" fill="none"/><path d="M67.5 55 Q70.4 63.5 70.1 72.5" stroke="${c}" stroke-width="10" stroke-linecap="round" fill="none"/>`
+   +`<path d="M32.8 52.5 Q50 46 67.2 52.5 L64.8 94 Q50 99 35.2 94Z" fill="${c}"/>`
+   +`<path d="M36.4 60 L63.6 60 M36.8 68 L63.2 68 M37.1 76 L62.9 76 M37.4 84 L62.6 84" stroke="#fff" stroke-opacity=".6" stroke-width="3" fill="none"/>`
+   +`<path d="M44 49.8 Q50 53.8 56 49.8" fill="none" stroke="#000" stroke-opacity=".14" stroke-width="1.7"/>`},
  bottom:{
-  pants:c=>`<rect x="36" y="90" width="28" height="8" rx="2.5" fill="${c}"/>`
-   +`<rect x="39.8" y="95" width="9.6" height="42" rx="4.2" fill="${c}"/><rect x="50.6" y="95" width="9.6" height="42" rx="4.2" fill="${c}"/>`
-   +`<rect x="49.4" y="98" width="1.2" height="38" fill="#000" opacity=".10"/>`,
-  shorts:c=>`<rect x="36" y="90" width="28" height="8" rx="2.5" fill="${c}"/>`
-   +`<rect x="39.8" y="95" width="9.6" height="17" rx="4" fill="${c}"/><rect x="50.6" y="95" width="9.6" height="17" rx="4" fill="${c}"/>`,
-  skirt:c=>`<path d="M35 91 L65 91 Q76 111 71 117 Q50 122 29 117 Q24 111 35 91 Z" fill="${c}"/>`},
+  pants:c=>`<path d="M36 89.5 Q50 94.5 64 89.5 L64 98 Q50 102.5 36 98Z" fill="${c}"/>`
+   +`<path d="M43.5 97 L42.7 166.5" stroke="${c}" stroke-width="11" stroke-linecap="round" fill="none"/><path d="M56.5 97 L57.3 166.5" stroke="${c}" stroke-width="11" stroke-linecap="round" fill="none"/>`
+   +`<path d="M50 99 L50 108" stroke="#000" stroke-opacity=".14" stroke-width="1.4"/>`
+   +`<rect x="37.8" y="160" width="9.8" height="2.8" rx="1.4" fill="#fff" opacity=".28"/><rect x="52.4" y="160" width="9.8" height="2.8" rx="1.4" fill="#fff" opacity=".28"/>`,
+  shorts:c=>`<path d="M36 89.5 Q50 94.5 64 89.5 L64 98 Q50 102.5 36 98Z" fill="${c}"/>`
+   +`<path d="M43.5 97 L43 119" stroke="${c}" stroke-width="11.5" stroke-linecap="round" fill="none"/><path d="M56.5 97 L57 119" stroke="${c}" stroke-width="11.5" stroke-linecap="round" fill="none"/>`
+   +`<rect x="38" y="115" width="10.5" height="2.8" rx="1.4" fill="#fff" opacity=".3"/><rect x="51.5" y="115" width="10.5" height="2.8" rx="1.4" fill="#fff" opacity=".3"/>`,
+  skirt:c=>`<path d="M36 89.5 Q50 94.5 64 89.5 L67.5 113 Q50 118.5 32.5 113Z" fill="${c}"/>`
+   +`<path d="M41 91.5 L38 111 M50 93 L50 113.5 M59 91.5 L62 111" stroke="#000" stroke-opacity=".07" stroke-width="1.5" fill="none"/>`},
  shoes:{
-  sneakers:c=>`<path d="M36 131 L47 131 Q50 131 50 134.5 L50 137 Q50 139 48 139 L34 139 Q32 139 32 137 Q32 131 36 131 Z" fill="${c}"/>`
-   +`<path d="M53 131 L64 131 Q68 131 68 137 Q68 139 66 139 L52 139 Q50 139 50 137 L50 134.5 Q50 131 53 131 Z" fill="${c}"/>`
-   +`<rect x="31.5" y="137" width="19" height="2.5" rx="1.2" fill="#fff" opacity=".85"/><rect x="49.5" y="137" width="19" height="2.5" rx="1.2" fill="#fff" opacity=".85"/>`,
-  boots:c=>`<path d="M38.5 123 L48.5 123 L48.5 134 Q48.5 139 44.5 139 L34 139 Q32 139 32 137 L33 130 Q33 123 38.5 123 Z" fill="${c}"/>`
-   +`<path d="M51.5 123 L61.5 123 Q67 123 67 130 L68 137 Q68 139 66 139 L55.5 139 Q51.5 139 51.5 134 Z" fill="${c}"/>`,
-  dress:c=>`<path d="M37 132 L48.5 132 L48.5 136 Q48.5 139 45 139 L36 139 Q33 139 33 137 Q33 132 37 132 Z" fill="${c}"/>`
-   +`<path d="M51.5 132 L63 132 Q67 132 67 137 Q67 139 64 139 L55 139 Q51.5 139 51.5 136 Z" fill="${c}"/>`},
- acc:{glasses:c=>`<circle cx="43" cy="34" r="5.6" fill="#fff" fill-opacity=".18" stroke="${c}" stroke-width="1.7"/><circle cx="57" cy="34" r="5.6" fill="#fff" fill-opacity=".18" stroke="${c}" stroke-width="1.7"/><line x1="48.6" y1="34" x2="51.4" y2="34" stroke="${c}" stroke-width="1.7"/>`,
-  sun:c=>`<path d="M37 31 h12 v6 a6 6 0 0 1 -12 0 z" fill="${c}"/><path d="M51 31 h12 v6 a6 6 0 0 1 -12 0 z" fill="${c}"/><line x1="49" y1="32" x2="51" y2="32" stroke="${c}" stroke-width="1.7"/>`,
-  bag:c=>`<path d="M67 73 Q54 60 44 69" stroke="${c}" stroke-width="2.6" fill="none"/><rect x="64" y="71" width="14" height="17" rx="3.5" fill="${c}"/>`,
-  scarf:c=>`<path d="M38 50 Q50 58 62 50 L62 56 Q50 63 38 56 Z" fill="${c}"/><rect x="44" y="55" width="7" height="15" rx="3" fill="${c}"/>`,
-  medal:c=>`<path d="M46 56 l4 8 l4 -8" stroke="${c}" stroke-width="2.6" fill="none"/><circle cx="50" cy="66" r="5.2" fill="${c}"/><circle cx="50" cy="66" r="2" fill="#fff" opacity=".5"/>`}
+  sneakers:c=>`<path d="M36.8 167.5 Q35.6 174 36.6 179 Q36.8 181.5 39.5 181.5 L47 181.5 Q49.2 181.5 49.2 178.5 L48.9 167 Q42.8 165 36.8 167.5Z" fill="${c}"/>`
+   +`<path d="M63.2 167.5 Q64.4 174 63.4 179 Q63.2 181.5 60.5 181.5 L53 181.5 Q50.8 181.5 50.8 178.5 L51.1 167 Q57.2 165 63.2 167.5Z" fill="${c}"/>`
+   +`<rect x="35.8" y="177.6" width="13.6" height="3.9" rx="1.9" fill="#fff" opacity=".92"/><rect x="50.6" y="177.6" width="13.6" height="3.9" rx="1.9" fill="#fff" opacity=".92"/>`
+   +`<path d="M38.6 170.5 Q42.8 172.5 47.3 170.8 M52.7 170.8 Q57.2 172.5 61.4 170.5" stroke="#fff" stroke-opacity=".55" stroke-width="1.4" fill="none"/>`,
+  boots:c=>`<path d="M37.3 152 Q36.2 168 36.9 177.5 Q37 181 41 181 L47.3 181 Q49.3 181 49.2 177.5 L48.6 152Z" fill="${c}"/>`
+   +`<path d="M62.7 152 Q63.8 168 63.1 177.5 Q63 181 59 181 L52.7 181 Q50.7 181 50.8 177.5 L51.4 152Z" fill="${c}"/>`
+   +`<rect x="36.6" y="152" width="12.4" height="3.4" rx="1.7" fill="#fff" opacity=".26"/><rect x="51" y="152" width="12.4" height="3.4" rx="1.7" fill="#fff" opacity=".26"/>`
+   +`<rect x="36.4" y="177.8" width="13.2" height="3.4" rx="1.7" fill="#000" opacity=".2"/><rect x="50.4" y="177.8" width="13.2" height="3.4" rx="1.7" fill="#000" opacity=".2"/>`,
+  dress:c=>`<path d="M37.6 172 Q36.6 177 37.5 180.5 L47.6 180.5 Q48.9 176 48.4 171.5 Q42.9 169.8 37.6 172Z" fill="${c}"/>`
+   +`<path d="M62.4 172 Q63.4 177 62.5 180.5 L52.4 180.5 Q51.1 176 51.6 171.5 Q57.1 169.8 62.4 172Z" fill="${c}"/>`
+   +`<circle cx="40.5" cy="173.6" r="1" fill="#fff" opacity=".6"/><circle cx="59.5" cy="173.6" r="1" fill="#fff" opacity=".6"/>`},
+ acc:{
+  glasses:c=>`<circle cx="44" cy="26" r="4.7" fill="#fff" fill-opacity=".13" stroke="${c}" stroke-width="1.6"/><circle cx="56" cy="26" r="4.7" fill="#fff" fill-opacity=".13" stroke="${c}" stroke-width="1.6"/>`
+   +`<line x1="48.7" y1="25.6" x2="51.3" y2="25.6" stroke="${c}" stroke-width="1.6"/>`
+   +`<line x1="39.3" y1="25.4" x2="35.4" y2="25.8" stroke="${c}" stroke-width="1.3"/><line x1="60.7" y1="25.4" x2="64.6" y2="25.8" stroke="${c}" stroke-width="1.3"/>`,
+  sun:c=>`<path d="M39.5 23.5 h9 v4 a4.5 4.5 0 0 1 -9 0 z" fill="${c}"/><path d="M51.5 23.5 h9 v4 a4.5 4.5 0 0 1 -9 0 z" fill="${c}"/>`
+   +`<line x1="48.5" y1="24.3" x2="51.5" y2="24.3" stroke="${c}" stroke-width="1.6"/>`
+   +`<circle cx="42" cy="25.5" r="1.2" fill="#fff" opacity=".4"/><circle cx="54" cy="25.5" r="1.2" fill="#fff" opacity=".4"/>`,
+  bag:c=>`<path d="M35.8 53.5 Q52 71 65 85" stroke="${c}" stroke-width="3" fill="none" opacity=".92" stroke-linecap="round"/>`
+   +`<rect x="58" y="80" width="17" height="19" rx="4.5" fill="${c}"/>`
+   +`<rect x="58" y="80" width="17" height="6" rx="3" fill="#000" opacity=".15"/>`
+   +`<circle cx="66.5" cy="90" r="1.7" fill="#fff" opacity=".6"/>`,
+  scarf:c=>`<path d="M42 44.5 Q50 50.5 58 44.5 L58.5 51.5 Q50 57.5 41.5 51.5Z" fill="${c}"/>`
+   +`<path d="M46 52 L44.3 73 Q47.5 76 50.8 73 L50.3 53" fill="${c}"/>`
+   +`<path d="M45 70 L44.8 73.5 M47.5 71 L47.4 74.5 M49.8 70.5 L49.7 73.8" stroke="#fff" stroke-opacity=".4" stroke-width="1.2"/>`,
+  medal:c=>`<path d="M44 51.5 L50 64 L56 51.5" stroke="#d8504f" stroke-width="3" fill="none"/>`
+   +`<circle cx="50" cy="66.5" r="5.5" fill="${c}"/><circle cx="50" cy="66.5" r="5.5" fill="none" stroke="#000" stroke-opacity=".12"/>`
+   +`<path d="M50 63.5 l1 2 2.2 .3 -1.6 1.6 .35 2.2 -1.95 -1.05 -1.95 1.05 .35 -2.2 -1.6 -1.6 2.2 -.3Z" fill="#fff" opacity=".9"/>`}
 };
 const WARDROBE={
  hair:[{id:'h_short_br',n:'갈색 숏컷',type:'short',c:'#6b4226',cost:0},{id:'h_short_bk',n:'검정 숏컷',type:'short',c:'#2b2b2b',cost:0},{id:'h_bob',n:'단발',type:'bob',c:'#7a4a2a',cost:0},{id:'h_long',n:'긴 머리',type:'long',c:'#6b4226',cost:30},{id:'h_pony',n:'포니테일',type:'ponytail',c:'#3a2b1a',cost:40},{id:'h_curly',n:'곱슬',type:'curly',c:'#2b2b2b',cost:40},{id:'h_pink',n:'핑크 단발',type:'bob',c:'#ec6fa0',cost:70},{id:'h_blue',n:'파랑 숏컷',type:'short',c:'#4f86c6',cost:70}],
@@ -462,11 +546,21 @@ const WARDROBE={
 const WARDROBE_CATS=[['hair','헤어'],['hat','모자'],['top','상의'],['bottom','하의'],['shoes','신발'],['acc','액세서리']];
 function wearOf(a){if(!a.wear)a.wear={hair:'h_short_br',hat:'',top:'t_sky',bottom:'b_navy',shoes:'s_white',acc:''};return a.wear;}
 function partSVG(slot,id){const it=(WARDROBE[slot]||[]).find(x=>x.id===id);if(!it)return '';const fn=(PARTS[slot]||{})[it.type];return fn?fn(it.c):'';}
-function charSVG(wear,size){const w=wear||{};const s=size||118;
-  return `<svg viewBox="0 0 100 145" width="${s}" height="${Math.round(s*1.42)}" style="display:block">`
-   +`<ellipse cx="50" cy="141" rx="22" ry="3.4" fill="#000" opacity=".07"/>`
-   +bodyBase()+partSVG('bottom',w.bottom)+partSVG('shoes',w.shoes)+partSVG('top',w.top)+face()+partSVG('hair',w.hair)+partSVG('hat',w.hat)+partSVG('acc',w.acc)+`</svg>`;}
-function charBig(a){return charSVG(wearOf(a),118);}
+function charSVG(wear,size,anim){const w=wear||{};const s=size||100;
+  return `<svg viewBox="0 0 100 200" width="${s}" height="${s*2}" class="${anim?'ch-anim':''}" style="display:block;overflow:visible">`
+   +`<ellipse class="ch-shadow" cx="50" cy="187" rx="19" ry="3" fill="#000" opacity=".08"/>`
+   +`<g class="ch-body">`+bodyBase()+partSVG('bottom',w.bottom)+partSVG('shoes',w.shoes)+partSVG('top',w.top)+face()+partSVG('hair',w.hair)+partSVG('hat',w.hat)+partSVG('acc',w.acc)+`</g></svg>`;}
+function charBig(a){return charSVG(wearOf(a),100,true);}
+/* 상점 카드용 — 아이템 단독 프리뷰 (모자·헤어는 두상 실루엣 위에, 옷·신발은 단독) */
+const _MANN='#efe3d3';
+function _mannHead(){return `<path d="M50 7.5 Q65.5 7.5 65.5 24 Q65.5 34.5 57.5 40 Q53.5 42.5 50 42.5 Q46.5 42.5 42.5 40 Q34.5 34.5 34.5 24 Q34.5 7.5 50 7.5Z" fill="${_MANN}"/><ellipse cx="35" cy="26.5" rx="2.6" ry="3.6" fill="${_MANN}"/><ellipse cx="65" cy="26.5" rx="2.6" ry="3.6" fill="${_MANN}"/>`;}
+function _mannBust(){return _mannHead()+`<path d="M46 36 L46 50 Q50 53 54 50 L54 36Z" fill="${_MANN}"/><path d="M33.5 52 Q50 45.5 66.5 52 L64 93 Q50 98 36 93Z" fill="${_MANN}"/>`;}
+const ITEM_CROP={hair:[28,0,44,50],hat:[26,0,48,44],top:[22,42,56,62],bottom:[28,84,44,100],shoes:[30,158,40,28],acc:[24,12,52,84]};
+function itemSVG(slot,id,H){const cr=ITEM_CROP[slot];const wpx=Math.round(H*cr[2]/cr[3]);
+  let base='';
+  if(slot==='hair'||slot==='hat')base=_mannHead();
+  if(slot==='acc')base=_mannBust();
+  return `<svg viewBox="${cr[0]} ${cr[1]} ${cr[2]} ${cr[3]}" width="${wpx}" height="${H}" style="display:block">${base}${partSVG(slot,id)}</svg>`;}
 function charMini(a){return a.avatar||'🙂';}
 const BADGES=[
  {id:'first',ic:'🌱',name:'첫 독후감',cond:u=>accReports(u.id).length>=1},
@@ -1819,7 +1913,7 @@ function sShop(){const u=me();const w=wearOf(u);
    <div class="locker">
      <div class="locker-doll">
        <div class="dollbar"><span>📦 ${u.name}의 사물함</span><span class="muted" style="font-weight:600;font-size:11px">아이템 ${ownedCount}개</span></div>
-       <div class="doll-stage">${charSVG(pvWear,140)}${tryItem?'<div class="tryflag">미리보기</div>':''}</div>
+       <div class="doll-stage">${charSVG(pvWear,118,true)}${tryItem?'<div class="tryflag">미리보기</div>':''}</div>
        ${tInfo?`<div class="tryinfo">
           <div style="font-weight:800;font-size:14.5px">${tInfo.n}</div>
           <div class="muted" style="margin:2px 0 8px">${owned?'보유 중인 아이템':'⭐ '+tInfo.cost+'P'}</div>
@@ -1836,10 +1930,10 @@ function sShop(){const u=me();const w=wearOf(u);
      <div class="locker-inv">
        <div class="seg">${WARDROBE_CATS.map(([k,label])=>`<button class="${shopCat===k?'on':''}" onclick="shopGo('${k}')">${label}</button>`).join('')}</div>
        <div class="invgrid">${WARDROBE[shopCat].map(it=>{const own=u.items.includes(it.id)||it.cost===0;const isWorn=w[shopCat]===it.id;const trying=tryItem&&tryItem.cat===shopCat&&tryItem.id===it.id;
-         const prev=Object.assign({},w);prev[shopCat]=it.id;
-         return `<div class="invcell ${isWorn?'worn':''} ${trying?'trying':''}" onclick="tryOn('${shopCat}','${it.id}')">
+         const prev=Object.assign({},w);prev[shopCat]=it.id;const rar=it.cost>=100?'r3':it.cost>=60?'r2':'';
+         return `<div class="invcell ${rar} ${isWorn?'worn':''} ${trying?'trying':''}" onclick="tryOn('${shopCat}','${it.id}')">
            ${isWorn?'<span class="ribbon w">착용중</span>':(own&&it.cost>0?'<span class="ribbon o">보유</span>':'')}
-           <div style="display:flex;justify-content:center;height:78px;overflow:hidden">${charSVG(prev,56)}</div>
+           <div style="display:flex;justify-content:center;align-items:center;height:84px">${itemSVG(shopCat,it.id,76)}</div>
            <div class="nm">${it.n}</div>
            <div style="margin-top:1px">${own?'<span class="muted" style="font-size:11.5px">'+(it.cost===0?'기본':'보유')+'</span>':'<span class="price">⭐'+it.cost+'P</span>'}</div></div>`;}).join('')}</div>
      </div>
@@ -1847,7 +1941,12 @@ function sShop(){const u=me();const w=wearOf(u);
 function shopGo(k){shopCat=k;tryItem=null;mountStudent();}
 function tryOn(cat,id){tryItem={cat,id};mountStudent();}
 function tryClear(){tryItem=null;mountStudent();}
-function buy(cat,id,cost){const u=me();if(u.points<cost){toast('포인트가 부족해요. 독후감을 더 써볼까요? ✍️');return;}u.points-=cost;if(!u.items.includes(id))u.items.push(id);wearOf(u)[cat]=id;save();toast('구매·착용 완료! 🎉');mountStudent();}
+function confettiBurst(){const ems=['🎉','⭐','✨','🎊'];for(let i=0;i<14;i++){const s=document.createElement('span');s.textContent=ems[i%4];
+  s.style.cssText=`position:fixed;left:${44+Math.random()*12}%;top:52%;font-size:${13+Math.random()*15}px;z-index:9999;pointer-events:none;transition:transform 1s cubic-bezier(.17,.67,.35,1),opacity 1s ease-in`;
+  document.body.appendChild(s);
+  requestAnimationFrame(()=>{s.style.transform=`translate(${(Math.random()-.5)*280}px,${-90-Math.random()*190}px) rotate(${(Math.random()-.5)*400}deg)`;s.style.opacity='0';});
+  setTimeout(()=>s.remove(),1150);}}
+function buy(cat,id,cost){const u=me();if(u.points<cost){toast('포인트가 부족해요. 독후감을 더 써볼까요? ✍️');return;}u.points-=cost;if(!u.items.includes(id))u.items.push(id);wearOf(u)[cat]=id;save();confettiBurst();toast('구매·착용 완료! 🎉');mountStudent();}
 function equip(cat,id){const u=me();const w=wearOf(u);if(cat==='hat'||cat==='acc')w[cat]=(w[cat]===id?'':id);else w[cat]=id;save();toast('착용!');mountStudent();}
 function undressAll(){const u=me();const w=wearOf(u);w.hat='';w.acc='';tryItem=null;save();toast('모자·소품을 벗었어요');mountStudent();}
 
