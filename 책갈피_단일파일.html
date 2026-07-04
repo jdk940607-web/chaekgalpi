@@ -332,7 +332,6 @@ html,body{overflow-x:hidden}
 .tr-sp.p1{left:30px;top:30px;font-size:20px}.tr-sp.p2{right:40px;top:42px;font-size:16px;animation-delay:.6s}.tr-sp.p3{left:52px;bottom:34px;font-size:18px;animation-delay:1.2s}.tr-sp.p4{right:30px;bottom:38px;font-size:20px;animation-delay:1.8s}
 @keyframes trfloat{0%,100%{transform:translateY(0);opacity:.45}50%{transform:translateY(-10px);opacity:1}}
 .tr-cap{position:absolute;bottom:9px;left:0;right:0;text-align:center;font-size:11px;font-weight:800;letter-spacing:3px;opacity:.9}
-.trvid{margin-top:8px;height:84px;border-radius:12px;background:linear-gradient(135deg,#0f1d3d,#1b2e5a);color:#fff;display:grid;place-items:center;font-size:24px;cursor:pointer;animation:fadeUp .3s ease both}
 /* ===== 나눔터 문장 스티커(동료평가) ===== */
 .psent{cursor:pointer;border-radius:4px;padding:1px 2px;transition:background .12s}
 .psent:hover{background:#eaf4fb}
@@ -1443,14 +1442,8 @@ function openTrailer(idx){const b=BOOKS[idx];if(!b)return;const c=THEME[b.th]||[
      <div style="display:flex;gap:12px;align-items:flex-start;margin-bottom:10px">${cvUrl?`<img src="${cvUrl}" style="height:72px;border-radius:8px;box-shadow:var(--shadow);object-fit:cover;flex:none" onerror="this.remove()">`:''}<div><div style="font-weight:800;font-size:17px;color:#14264a;letter-spacing:-.02em">${b.t}</div>
      <div class="muted">${b.a} · ${b.th} · ${bandName(b.g)}</div></div></div>
      <p style="font-size:14px;color:#374151;line-height:1.65">${blurb}</p>
-     <div class="note" style="margin-top:11px"><b style="font-size:12.5px">🎬 AI 북 트레일러 만들기 <span class="tag">데모</span></b>
-       <div class="muted" style="font-size:12px;margin:4px 0 7px">이 책을 소개하는 한 문장을 쓰면 AI가 짧은 영상을 만들어줘요.</div>
-       <div class="row" style="gap:6px;flex-wrap:wrap"><input id="trIdea" placeholder="예) 쓸모없던 강아지똥이 꽃을 피워요" style="flex:1;min-width:150px"><button class="btn sm" onclick="genTrailerAI()">🎬 만들기</button></div>
-       <div id="trGen"></div></div>
      <button class="btn block" style="margin-top:12px" onclick="closeModal();writeAboutBook(${idx})">✍️ 이 책으로 독후감 쓰기</button>
    </div>`);}
-function genTrailerAI(){const box=$('#trGen');if(!box)return;box.innerHTML='<div class="note" style="margin-top:8px">🎬 AI가 북 트레일러를 만드는 중...</div>';
-  setTimeout(()=>{box.innerHTML=`<div class="trvid">▶</div><div class="muted" style="font-size:11px;margin-top:5px">AI 생성 북 트레일러 (데모 · 30초) — 실서비스에서는 입력 문장으로 생성형 영상 AI가 제작합니다.</div>`;},1100);}
 const BOOKS=[
  {t:'강아지똥',a:'권정생',th:'성장',i:'🐕',g:'저'},{t:'사과가 쿵!',a:'다다 히로시',th:'저학년',i:'🍎',g:'저'},
  {t:'무지개 물고기',a:'마르쿠스 피스터',th:'우정',i:'🐟',g:'저'},{t:'구름빵',a:'백희나',th:'마음',i:'☁️',g:'저'},
@@ -1588,7 +1581,7 @@ function writeAboutBook(i){const b=BOOKS[i];draft={book:`「${b.t}」 ${b.a}`,bo
 function bookShelf(label,sub,items,opts){opts=opts||{};if(!items.length)return '';
   return `<div style="margin-top:16px"><div class="shelf-h">${label}</div>${sub?`<div class="muted" style="font-size:12px;margin-top:1px">${sub}</div>`:''}
    <div class="bookrow">${items.map((b,i)=>{const idx=BOOKS.indexOf(b);
-     return `<div class="bookcell" onclick="openTrailer(${idx})" title="${b.t} · ${b.a} — 북 트레일러 보기">
+     return `<div class="bookcell" onclick="openTrailer(${idx})" title="${b.t} · ${b.a} — 책 소개 보기">
        <div style="position:relative;width:max-content;margin:0 auto">${coverHTML(b,true)}${opts.rank?`<div class="loanrank">${i+1}</div>`:''}</div>
        <div class="bktitle">${b.t}</div><div class="bkauthor">${b.a}</div></div>`;}).join('')}</div></div>`;}
 function bookShelvesCard(){const u=me();const band=gradeBand(u.grade);
