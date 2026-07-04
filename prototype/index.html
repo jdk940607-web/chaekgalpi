@@ -1495,7 +1495,7 @@ async function loadCovers(root){
   root=root||document;
   const els=[...root.querySelectorAll('[data-ct]:not([data-cv-done])')];
   if(!els.length)return;
-  const titles=[...new Set(els.map(e=>e.dataset.ct).filter(t=>!(t in _cvCache)))];
+  const titles=[...new Set(els.map(e=>e.dataset.ct).filter(t=>!_cvCache[t]))];
   // 한 번에 4개씩 병렬 요청
   for(let i=0;i<titles.length;i+=4){
     await Promise.all(titles.slice(i,i+4).map(async t=>{
@@ -1539,7 +1539,7 @@ function writeAboutRealBook(i){const b=_libLive.books[i];draft={book:`「${b.tit
 /* 앱 시작 시 BOOKS 44종 전체 표지 백그라운드 프리패치 (캐시 없는 것만) */
 setTimeout(async()=>{
   if(typeof BOOKS==='undefined')return;
-  const missing=BOOKS.filter(b=>!(b.t in _cvCache)).map(b=>b.t);
+  const missing=BOOKS.filter(b=>!_cvCache[b.t]).map(b=>b.t);
   for(let i=0;i<missing.length;i+=4){
     await Promise.all(missing.slice(i,i+4).map(async t=>{
       try{const r=await fetch(`${FN_BASE}/booksearch?q=${encodeURIComponent(t)}&size=1`);
