@@ -1586,7 +1586,7 @@ async function fillTrailerReco(title){
     <div style="display:flex;flex-wrap:wrap;gap:6px">${kw.map(w=>`<span style="background:#eef4ff;color:#2f4d7a;border-radius:999px;padding:3px 10px;font-size:12px;font-weight:600">${dEsc(w)}</span>`).join('')}</div></div>`;}
   if(books.length){html+=`<div style="margin-top:14px"><div style="font-weight:700;font-size:13px;color:#14264a;margin-bottom:6px">📚 이 책을 좋아하면 이런 책도!</div>
     <div class="bookrow">${books.map(b=>`<div class="bookcell" title="${dEsc(b.title)} · ${dEsc(b.author)}">
-      ${b.cover?`<img src="${dEsc(b.cover)}" style="width:94px;height:126px;border-radius:8px;box-shadow:var(--shadow);object-fit:cover" onerror="this.style.display='none'">`:`<div style="width:94px;height:126px;border-radius:8px;background:linear-gradient(150deg,#94a3b8,#475569);box-shadow:var(--shadow)"></div>`}
+      ${b.cover?`<img src="${dEsc(b.cover)}" style="width:94px;height:126px;border-radius:8px;box-shadow:var(--shadow);object-fit:cover" onerror="this.style.display='none'">`:`<div data-ct="${dEsc(b.title)}" data-cbig="1" style="width:94px;height:126px;border-radius:8px;background:linear-gradient(150deg,#94a3b8,#475569);box-shadow:var(--shadow);display:flex;align-items:flex-end;padding:8px;color:#fff;font-size:11px;font-weight:700;overflow:hidden">${dEsc(b.title)}</div>`}
       <div class="bktitle">${dEsc(b.title)}</div><div class="bkauthor">${dEsc(b.author)}</div></div>`).join('')}</div></div>`;}
   host.innerHTML=html;
   fillLibraryWhere(title,host);
