@@ -1520,6 +1520,22 @@ async function loadCovers(root){
 let _cvTimer=null;
 new MutationObserver(()=>{clearTimeout(_cvTimer);_cvTimer=setTimeout(()=>loadCovers(),300);})
   .observe(document.body,{childList:true,subtree:true});
+/* ── 도서관 정보나루(실 대출데이터) — 하루 1회 캐시, 실패 시 시뮬레이션(LOAN_TOP) 폴백 ── */
+let _libLive=(()=>{try{return JSON.parse(localStorage.getItem('_libLive')||'null');}catch(e){return null;}})();
+async function loadLiveLoans(){
+  if(_libLive&&Date.now()-_libLive.ts<86400000)return;
+  try{const r=await fetch(`${FN_BASE}/popular-books?size=10`);const j=await r.json();
+    if(j.books&&j.books.length){_libLive={ts:Date.now(),books:j.books};
+      try{localStorage.setItem('_libLive',JSON.stringify(_libLive));}catch(e){}
+      if(sTab==='home'&&typeof mountStudent==='function')mountStudent();}
+  }catch(e){}}
+setTimeout(()=>{if(typeof FN_BASE!=='undefined')loadLiveLoans();},1200);
+function realLoanShelf(){const books=_libLive&&_libLive.books;if(!books||!books.length)return '';
+  return `<div style="margin-top:16px"><div class="shelf-h">📈 이번 주 대출 Top 10</div><div class="muted" style="font-size:12px;margin-top:1px">전국 초등(8~13세) 실시간 대출 순위 · 도서관 정보나루</div>
+   <div class="bookrow">${books.map((b,i)=>`<div class="bookcell" style="cursor:pointer" onclick="writeAboutRealBook(${i})" title="${dEsc(b.title)} · ${dEsc(b.author)}">
+     <div style="position:relative;width:max-content;margin:0 auto">${b.cover?`<img src="${b.cover}" style="width:94px;height:126px;border-radius:8px;box-shadow:var(--shadow);object-fit:cover" onerror="this.style.display='none'">`:`<div style="width:94px;height:126px;border-radius:8px;background:linear-gradient(150deg,#94a3b8,#475569)"></div>`}<div class="loanrank">${i+1}</div></div>
+     <div class="bktitle">${dEsc(b.title)}</div><div class="bkauthor">${dEsc(b.author)}</div></div>`).join('')}</div></div>`;}
+function writeAboutRealBook(i){const b=_libLive.books[i];draft={book:`「${b.title}」 ${b.author}`,body:'',input:'키보드',challengeId:null,bookCover:b.cover||null};sTab='write';$('#sbody').innerHTML=sWrite();$('#writeArea').innerHTML=editorCard();render2tabs();toast(`'${b.title}'으로 독후감을 써요! ✍️`);}
 /* 앱 시작 시 BOOKS 44종 전체 표지 백그라운드 프리패치 (캐시 없는 것만) */
 setTimeout(async()=>{
   if(typeof BOOKS==='undefined')return;
@@ -1581,7 +1597,7 @@ function bookShelvesCard(){const u=me();const band=gradeBand(u.grade);
     ${bookShelf(`🎯 ${u.grade}학년 맞춤 추천`,'학년 수준에 맞는 권장도서',grade)}
     ${bookShelf('🌟 이달의 추천도서',MONTH_PICK.theme,month)}
     ${bookShelf('🔥 친구들이 많이 쓴 책','인기 독후활동 도서',pop.slice(0,12))}
-    ${bookShelf('📈 이번 주 대출 Top 10','전국 초등 인기 대출 순위',loan,{rank:true})}
+    ${_libLive&&_libLive.books&&_libLive.books.length?realLoanShelf():bookShelf('📈 이번 주 대출 Top 10','전국 초등 인기 대출 순위(시연용)',loan,{rank:true})}
   </div>`;}
 function wongoji(){const t=($('#dBody').value||'');const chars=[...t.replace(/\n/g,'')];const real=chars.filter(c=>c.trim()!=='').length;
   const cells=chars.slice(0,200).map(c=>`<div style="width:24px;height:24px;border:1px solid #e4c9a0;display:flex;align-items:center;justify-content:center;font-size:13px;background:#fffdf5">${c===' '?'':c}</div>`).join('');
