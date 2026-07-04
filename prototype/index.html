@@ -1530,9 +1530,10 @@ async function loadLiveLoans(){
 setTimeout(()=>{if(typeof FN_BASE!=='undefined')loadLiveLoans();},1200);
 function realLoanShelf(){const books=_libLive&&_libLive.books;if(!books||!books.length)return '';
   return `<div style="margin-top:16px"><div class="shelf-h">📈 이번 주 대출 Top 10</div><div class="muted" style="font-size:12px;margin-top:1px">전국 초등(8~13세) 실시간 대출 순위 · 도서관 정보나루</div>
-   <div class="bookrow">${books.map((b,i)=>`<div class="bookcell" style="cursor:pointer" onclick="writeAboutRealBook(${i})" title="${dEsc(b.title)} · ${dEsc(b.author)}">
+   <div class="bookrow">${books.map((b,i)=>`<div class="bookcell" style="cursor:pointer" onclick="openExtFromLoan(${i})" title="${dEsc(b.title)} · ${dEsc(b.author)}">
      <div style="position:relative;width:max-content;margin:0 auto">${b.cover?`<img src="${b.cover}" style="width:94px;height:126px;border-radius:8px;box-shadow:var(--shadow);object-fit:cover" onerror="this.style.display='none'">`:`<div style="width:94px;height:126px;border-radius:8px;background:linear-gradient(150deg,#94a3b8,#475569)"></div>`}<div class="loanrank">${i+1}</div></div>
      <div class="bktitle">${dEsc(b.title)}</div><div class="bkauthor">${dEsc(b.author)}</div></div>`).join('')}</div></div>`;}
+function openExtFromLoan(i){const b=_libLive&&_libLive.books&&_libLive.books[i];if(!b)return;openExtBook(b.title,b.author,b.cover||'',b.isbn||'');}
 function writeAboutRealBook(i){const b=_libLive.books[i];draft={book:`「${b.title}」 ${b.author}`,body:'',input:'키보드',challengeId:null,bookCover:b.cover||null};sTab='write';$('#sbody').innerHTML=sWrite();$('#writeArea').innerHTML=editorCard();render2tabs();toast(`'${b.title}'으로 독후감을 써요! ✍️`);}
 /* 앱 시작 시 BOOKS 44종 전체 표지 백그라운드 프리패치 (캐시 없는 것만) */
 setTimeout(async()=>{
@@ -1572,20 +1573,27 @@ function regionCode(str){
 }
 const _libIsbnCache={}; // 제목 → isbn13
 const _libWhereCache={}; // 제목 → {libs:[..]} 세션 캐시
-/* 책 소개 모달 연계추천 렌더 */
-async function fillTrailerReco(title){
-  const host=document.getElementById('trReco');if(!host)return;
+/* 연계추천 클릭용 외부 책 목록 (인덱스 방식 — HTML 속성 인젝션 방지) */
+let _extRecoList=[];
+function openExtFromList(i){const b=_extRecoList[i];if(!b)return;openExtBook(b.title,b.author,b.cover||'',b.isbn||'');}
+/* 키워드 칩 클릭 → 키워드로 책 검색 */
+function kwChip(w){return `<span onclick="openKeywordSearch(${JSON.stringify(String(w)).replace(/"/g,'&quot;')})" style="background:#eef4ff;color:#2f4d7a;border-radius:999px;padding:3px 10px;font-size:12px;font-weight:600;cursor:pointer" title="'${dEsc(w)}' 키워드로 책 찾기">${dEsc(w)} 🔍</span>`;}
+/* 책 소개 모달 연계추천 렌더 (host: 요소 id 문자열, 기본 'trReco') */
+async function fillTrailerReco(title,hostId){
+  hostId=hostId||'trReco';
+  const host=document.getElementById(hostId);if(!host)return;
   const d=await libAnalysisByTitle(title);
   if(!host.isConnected)return; // 모달 닫힘
   if(!d)return;
   const kw=(d.keywords||[]).slice(0,6);
   const seen=new Set(),books=[];
   for(const b of (d.coLoan||[]).concat(d.reco||[])){const id=b.isbn||b.title;if(!b.title||seen.has(id))continue;seen.add(id);books.push(b);if(books.length>=8)break;}
+  _extRecoList=books;
   let html='';
-  if(kw.length){html+=`<div style="margin-top:14px"><div style="font-weight:700;font-size:13px;color:#14264a;margin-bottom:6px">🔑 이 책의 키워드</div>
-    <div style="display:flex;flex-wrap:wrap;gap:6px">${kw.map(w=>`<span style="background:#eef4ff;color:#2f4d7a;border-radius:999px;padding:3px 10px;font-size:12px;font-weight:600">${dEsc(w)}</span>`).join('')}</div></div>`;}
+  if(kw.length){html+=`<div style="margin-top:14px"><div style="font-weight:700;font-size:13px;color:#14264a;margin-bottom:6px">🔑 이 책의 키워드 (눌러서 책 찾기)</div>
+    <div style="display:flex;flex-wrap:wrap;gap:6px">${kw.map(w=>kwChip(w)).join('')}</div></div>`;}
   if(books.length){html+=`<div style="margin-top:14px"><div style="font-weight:700;font-size:13px;color:#14264a;margin-bottom:6px">📚 이 책을 좋아하면 이런 책도!</div>
-    <div class="bookrow">${books.map(b=>`<div class="bookcell" title="${dEsc(b.title)} · ${dEsc(b.author)}">
+    <div class="bookrow">${books.map((b,i)=>`<div class="bookcell" style="cursor:pointer" onclick="openExtFromList(${i})" title="${dEsc(b.title)} · ${dEsc(b.author)}">
       ${b.cover?`<img src="${dEsc(b.cover)}" style="width:94px;height:126px;border-radius:8px;box-shadow:var(--shadow);object-fit:cover" onerror="this.style.display='none'">`:`<div data-ct="${dEsc(b.title)}" data-cbig="1" style="width:94px;height:126px;border-radius:8px;background:linear-gradient(150deg,#94a3b8,#475569);box-shadow:var(--shadow);display:flex;align-items:flex-end;padding:8px;color:#fff;font-size:11px;font-weight:700;overflow:hidden">${dEsc(b.title)}</div>`}
       <div class="bktitle">${dEsc(b.title)}</div><div class="bkauthor">${dEsc(b.author)}</div></div>`).join('')}</div></div>`;}
   host.innerHTML=html;
@@ -1619,6 +1627,79 @@ async function fillLibraryWhere(title,host){
   sec.innerHTML=`<div style="font-weight:700;font-size:13px;color:#14264a;margin-bottom:6px">🏛️ 우리 동네 도서관에서 빌리기</div>${libs.map(row).join('')}`;
   host.appendChild(sec);
 }
+/* ── 외부 책 모달 (BOOKS 배열에 없는 정보나루/검색 책) ── */
+let _extCur=null; // 현재 열린 외부 책 정보
+async function openExtBook(title,author,cover,isbn){
+  title=String(title||'');author=String(author||'');cover=cover||'';isbn=isbn||'';
+  _extCur={title,author,cover,isbn};
+  const bg=cover
+    ?`<img src="${dEsc(cover)}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0.28;filter:blur(2px)" onerror="this.remove()">`:'';
+  const coverBox=cover
+    ?`<img src="${dEsc(cover)}" style="height:110px;border-radius:12px;box-shadow:0 8px 28px rgba(0,0,0,.35);object-fit:cover" onerror="this.replaceWith(document.createTextNode('📖'))">`
+    :`<span class="tr-icon">📖</span>`;
+  showModal(`<div class="trailer" style="background:linear-gradient(140deg,#5b7bb4,#2f4d7a);position:relative;overflow:hidden">
+     ${bg}
+     <button class="tr-x" onclick="closeModal()" style="position:relative;z-index:2">✕</button>
+     <div class="tr-stage" style="position:relative;z-index:2">${coverBox}
+       <span class="tr-sp p1">✨</span><span class="tr-sp p2">⭐</span><span class="tr-sp p3">📖</span><span class="tr-sp p4">✨</span></div>
+     <div class="tr-cap" style="position:relative;z-index:2">BOOK</div></div>
+   <div style="padding:16px 18px 18px">
+     <div style="display:flex;gap:12px;align-items:flex-start;margin-bottom:10px">${cover?`<img src="${dEsc(cover)}" style="height:72px;border-radius:8px;box-shadow:var(--shadow);object-fit:cover;flex:none" onerror="this.remove()">`:''}<div><div id="extTitle" style="font-weight:800;font-size:17px;color:#14264a;letter-spacing:-.02em">${dEsc(title)}</div>
+     <div class="muted">${dEsc(author)}</div></div></div>
+     <p id="extDesc" style="font-size:14px;color:#374151;line-height:1.65">📖 책 소개를 불러오는 중이에요...</p>
+     <div id="extReco"></div>
+     <button class="btn block" style="margin-top:12px" onclick="writeAboutExtBook()">✍️ 이 책으로 독후감 쓰기</button>
+   </div>`);
+  // 비동기 보강: 소개·표지·isbn
+  try{
+    const r=await fetch(`${FN_BASE}/booksearch?q=${encodeURIComponent(title)}&size=1`);
+    const j=await r.json();
+    const bk=j.books&&j.books[0];
+    const descEl=document.getElementById('extDesc');
+    if(bk){
+      if(!_extCur.cover&&bk.thumbnail){_extCur.cover=bk.thumbnail;}
+      if(!_extCur.isbn&&bk.isbn){_extCur.isbn=_isbn13(bk.isbn);}
+      if(descEl&&descEl.isConnected){
+        descEl.textContent=bk.description?bk.description:`「${title}」를 함께 읽어 볼까요?`;
+      }
+    }else if(descEl&&descEl.isConnected){
+      descEl.textContent=`「${title}」를 함께 읽어 볼까요?`;
+    }
+  }catch(e){
+    const descEl=document.getElementById('extDesc');
+    if(descEl&&descEl.isConnected)descEl.textContent=`「${title}」를 함께 읽어 볼까요?`;
+  }
+  fillTrailerReco(title,'extReco');
+}
+function writeAboutExtBook(){const b=_extCur;if(!b)return;
+  draft={book:`「${b.title}」 ${b.author}`,body:'',input:'키보드',challengeId:null,bookCover:b.cover||null};
+  sTab='write';$('#sbody').innerHTML=sWrite();$('#writeArea').innerHTML=editorCard();render2tabs();
+  closeModal();toast(`'${b.title}'으로 독후감을 써요! ✍️`);}
+/* 키워드로 책 찾기 모달 */
+let _kwList=[];
+function openKwFromList(i){const b=_kwList[i];if(!b)return;openExtBook(b.title,b.author,b.thumbnail||'',b.isbn||'');}
+async function openKeywordSearch(word){
+  word=String(word||'');
+  showModal(`<div style="padding:20px 18px 18px">
+     <button class="tr-x" onclick="closeModal()" style="position:absolute;top:12px;right:14px">✕</button>
+     <div style="font-weight:800;font-size:17px;color:#14264a;margin-bottom:2px">🔍 '${dEsc(word)}' 책 찾기</div>
+     <div class="muted" style="margin-bottom:14px">이 키워드와 어울리는 책들이에요.</div>
+     <div id="kwResult" class="muted" style="font-size:13px">책을 찾고 있어요...</div>
+   </div>`);
+  let books=[];
+  try{
+    const r=await fetch(`${FN_BASE}/booksearch?q=${encodeURIComponent(word)}&size=6`);
+    const j=await r.json();books=j.books||[];
+  }catch(e){books=[];}
+  const host=document.getElementById('kwResult');
+  if(!host||!host.isConnected)return;
+  if(!books.length){host.innerHTML='책을 못 찾았어요. 다른 키워드로 찾아볼까요? 🙂';return;}
+  _kwList=books;
+  host.className='';
+  host.innerHTML=`<div class="bookrow">${books.map((b,i)=>`<div class="bookcell" style="cursor:pointer" onclick="openKwFromList(${i})" title="${dEsc(b.title)} · ${dEsc(b.author)}">
+     ${b.thumbnail?`<img src="${dEsc(b.thumbnail)}" style="width:94px;height:126px;border-radius:8px;box-shadow:var(--shadow);object-fit:cover" onerror="this.style.display='none'">`:`<div style="width:94px;height:126px;border-radius:8px;background:linear-gradient(150deg,#94a3b8,#475569);box-shadow:var(--shadow);display:flex;align-items:flex-end;padding:8px;color:#fff;font-size:11px;font-weight:700;overflow:hidden">${dEsc(b.title)}</div>`}
+     <div class="bktitle">${dEsc(b.title)}</div><div class="bkauthor">${dEsc(b.author)}</div></div>`).join('')}</div>`;
+}
 /* 나의 독서 키워드 지도 (학생 홈) */
 function keywordMapCard(){
   const u=me();const rs=accReports(u.id);
@@ -1628,7 +1709,7 @@ function keywordMapCard(){
   if(keys.length<2)return '';
   const mx=freq[keys[0]],mn=freq[keys[keys.length-1]];
   return `<div class="card"><h2>🗺️ 나의 독서 키워드 지도</h2><div class="sub">내가 읽은 책들의 키워드예요. 많이 만난 주제일수록 크게 보여요.</div>
-    <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:6px 2px">${keys.map(w=>{const sz=mx===mn?16:Math.round(12+(freq[w]-mn)/(mx-mn)*8);return `<span style="font-size:${sz}px;font-weight:700;color:#2f4d7a">${dEsc(w)}</span>`;}).join('')}</div></div>`;
+    <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:6px 2px">${keys.map(w=>{const sz=mx===mn?16:Math.round(12+(freq[w]-mn)/(mx-mn)*8);return `<span onclick="openKeywordSearch(${JSON.stringify(String(w)).replace(/"/g,'&quot;')})" style="font-size:${sz}px;font-weight:700;color:#2f4d7a;cursor:pointer" title="'${dEsc(w)}' 키워드로 책 찾기">${dEsc(w)}</span>`;}).join('')}</div></div>`;
 }
 /* 전국 도서관 트렌드 (사서) — 6시간 캐시 */
 let _libTrend=(()=>{try{return JSON.parse(localStorage.getItem('_libTrend')||'null');}catch(e){return null;}})();
