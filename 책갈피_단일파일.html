@@ -1565,9 +1565,18 @@ async function libAnalysisByTitle(title){
     const r2=await fetch(`${FN_BASE}/library?action=analysis&isbn=${isbn}`);
     if(!r2.ok)return null;
     const data=await r2.json();
-    _libAnaCache[title]=data;return data;
+    _libAnaCache[title]=data;_libIsbnCache[title]=isbn;return data;
   }catch(e){return null;}
 }
+/* 시도명(예: '경상북도') → 정보나루 지역코드. 매칭 실패 시 11(서울) */
+function regionCode(str){
+  const s=String(str||'');
+  const T=[['서울','11'],['부산','21'],['대구','22'],['인천','23'],['광주','24'],['대전','25'],['울산','26'],['세종','29'],['경기','31'],['강원','32'],['충북','33'],['충청북','33'],['충남','34'],['충청남','34'],['전북','35'],['전라북','35'],['전남','36'],['전라남','36'],['경북','37'],['경상북','37'],['경남','38'],['경상남','38'],['제주','39']];
+  for(const [k,v] of T){if(s.includes(k))return v;}
+  return '11';
+}
+const _libIsbnCache={}; // 제목 → isbn13
+const _libWhereCache={}; // 제목 → {libs:[..]} 세션 캐시
 /* 책 소개 모달 연계추천 렌더 */
 async function fillTrailerReco(title){
   const host=document.getElementById('trReco');if(!host)return;
@@ -1585,6 +1594,35 @@ async function fillTrailerReco(title){
       ${b.cover?`<img src="${dEsc(b.cover)}" style="width:94px;height:126px;border-radius:8px;box-shadow:var(--shadow);object-fit:cover" onerror="this.style.display='none'">`:`<div style="width:94px;height:126px;border-radius:8px;background:linear-gradient(150deg,#94a3b8,#475569);box-shadow:var(--shadow)"></div>`}
       <div class="bktitle">${dEsc(b.title)}</div><div class="bkauthor">${dEsc(b.author)}</div></div>`).join('')}</div></div>`;}
   host.innerHTML=html;
+  fillLibraryWhere(title,host);
+}
+/* 우리 동네 도서관 소장·대출가능 실시간 확인 */
+async function fillLibraryWhere(title,host){
+  const isbn=_libIsbnCache[title];if(!isbn)return;
+  let d=_libWhereCache[title];
+  if(!d){
+    try{
+      const region=regionCode((me()||{}).region);
+      const r=await fetch(`${FN_BASE}/library?action=where&isbn=${isbn}&region=${region}`);
+      if(!r.ok)return;
+      d=await r.json();_libWhereCache[title]=d;
+    }catch(e){return;}
+  }
+  if(!host||!host.isConnected)return;
+  const libs=(d.libs||[]).filter(l=>l.hasBook!==null);
+  if(!libs.length)return;
+  const row=(l)=>{
+    const label=l.hasBook===false?'소장 ❌':(l.loanAvailable?'지금 바로 빌릴 수 있어요 ✅':'대출 중 ⏳');
+    const nm=l.homepage
+      ?`<a href="${dEsc(l.homepage)}" target="_blank" rel="noopener" style="color:#2f4d7a;font-weight:700;text-decoration:none">${dEsc(l.name)}</a>`
+      :`<span style="font-weight:700;color:#14264a">${dEsc(l.name)}</span>`;
+    return `<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid #eef1f6">
+      ${nm}<span style="font-size:12px;font-weight:600;color:#3a4a66;white-space:nowrap">${label}</span></div>`;
+  };
+  const sec=document.createElement('div');
+  sec.style.marginTop='14px';
+  sec.innerHTML=`<div style="font-weight:700;font-size:13px;color:#14264a;margin-bottom:6px">🏛️ 우리 동네 도서관에서 빌리기</div>${libs.map(row).join('')}`;
+  host.appendChild(sec);
 }
 /* 나의 독서 키워드 지도 (학생 홈) */
 function keywordMapCard(){

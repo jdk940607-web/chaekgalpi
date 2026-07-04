@@ -64,6 +64,45 @@ async function doAnalysis(key, isbn) {
   return { keywords, coLoan, reco };
 }
 
+async function doWhere(key, isbn, region) {
+  // 1) 지역 내 소장 도서관 목록 (파라미터명 isbn, isbn13 아님)
+  const listUrl = `${BASE}/libSrchByBook?authKey=${key}&format=json&isbn=${encodeURIComponent(isbn)}&region=${encodeURIComponent(region)}&pageSize=5`;
+  const j = await fetchJson(listUrl);
+  const libsRaw = ((j && j.response && j.response.libs) || [])
+    .map((x) => x.lib || {})
+    .filter((l) => l.libCode);
+
+  // 2) 상위 3곳 소장·대출가능 병렬 확인 (bookExist는 isbn13)
+  const top = libsRaw.slice(0, 3);
+  const checks = await Promise.all(
+    top.map(async (l) => {
+      try {
+        const ex = await fetchJson(
+          `${BASE}/bookExist?authKey=${key}&format=json&isbn13=${encodeURIComponent(isbn)}&libCode=${encodeURIComponent(l.libCode)}`
+        );
+        const r = (ex && ex.response && ex.response.result) || {};
+        return {
+          hasBook: r.hasBook === 'Y' ? true : r.hasBook === 'N' ? false : null,
+          loanAvailable: r.loanAvailable === 'Y' ? true : r.loanAvailable === 'N' ? false : null,
+        };
+      } catch (e) {
+        return { hasBook: null, loanAvailable: null };
+      }
+    })
+  );
+
+  const libs = top.map((l, i) => ({
+    name: l.libName || '',
+    address: l.address || '',
+    tel: l.tel || '',
+    homepage: l.homepage || '',
+    hasBook: checks[i].hasBook,
+    loanAvailable: checks[i].loanAvailable,
+  }));
+
+  return { libs };
+}
+
 async function doTrend(key) {
   const d = new Date(Date.now() - 2 * 86400000).toISOString().slice(0, 10);
 
@@ -121,7 +160,13 @@ export default async function handler(req, res) {
     if (action === 'trend') {
       return res.status(200).json(await doTrend(key));
     }
-    return res.status(400).json({ error: 'action=analysis|trend 필요' });
+    if (action === 'where') {
+      const isbn = (req.query.isbn || '').replace(/[^0-9]/g, '');
+      if (isbn.length !== 13) return res.status(400).json({ error: 'isbn(13자리) 필요' });
+      const region = (req.query.region || '').replace(/[^0-9]/g, '') || '11';
+      return res.status(200).json(await doWhere(key, isbn, region));
+    }
+    return res.status(400).json({ error: 'action=analysis|trend|where 필요' });
   } catch (e) {
     console.error('library fail', action, e.message);
     return res.status(502).json({ error: '정보나루 조회 실패' });
