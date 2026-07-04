@@ -847,6 +847,7 @@ function libShell(){return `<nav class="tabs">
 </nav><div id="lbody"></div>`;}
 function libGo(k){libTab=k;mountLib();}
 function mountLib(){const b=$('#lbody');if(!b)return;b.innerHTML=libTab==='dash'?libDash():libEvents();
+  if(libTab==='dash')loadLibTrend();
   const map={dash:0,events:1};const bs=document.querySelectorAll('nav.tabs button');bs.forEach(x=>x.classList.remove('on'));if(bs[map[libTab]])bs[map[libTab]].classList.add('on');}
 function libDash(){const u=me();const code=u.schoolCode;
   const studs=schoolStudents(code);const reps=schoolReports(code);
@@ -866,7 +867,9 @@ function libDash(){const u=me();const code=u.schoolCode;
    ${popular.length?popular.map((p,i)=>`<div class="list-item"><div class="rank-no ${i<3?'r'+(i+1):''}">${i+1}</div>${p.b?`<div style="flex:none">${coverHTML(p.b)}</div>`:'<div class="avatar">📖</div>'}<div style="flex:1"><div style="font-weight:700">${p.b?p.b.t:p.t}</div><div class="muted">${p.b?p.b.a+' · ':''}독후감 ${p.n}편</div></div></div>`).join(''):'<div class="empty">아직 작성된 독후감이 없어요.</div>'}</div>
   <div class="card"><h2>📈 도서관 대출 Top (DLS 연동)</h2><div class="sub">대출 데이터예요. 이 순위가 학생 <b>'책 발견 → 이번 주 대출 Top'</b>에 자동으로 표시돼요.</div>
    <div class="bookrow">${dls.map((d,i)=>{const b=bookByTitle(d.title);return `<div class="bookcell"><div style="position:relative;width:max-content;margin:0 auto">${b?coverHTML(b,true):'<div class="avatar">📕</div>'}<div class="loanrank">${i+1}</div></div><div class="bktitle">${d.title}</div><div class="bkauthor">${d.count}회 대출</div></div>`;}).join('')}</div>
-   <div class="note" style="margin-top:6px">💡 실제 서비스에서는 학교 도서관 시스템(DLS) API와 연동해 대출 데이터가 자동 갱신돼요.</div></div>`;}
+   <div class="note" style="margin-top:6px">💡 실제 서비스에서는 학교 도서관 시스템(DLS) API와 연동해 대출 데이터가 자동 갱신돼요.</div></div>
+  <div class="card"><h2>📡 전국 도서관 트렌드 (정보나루 실데이터)</h2><div class="sub">전국 공공도서관의 실시간 대출 급상승 도서와 인기 키워드예요.</div>
+   <div id="libTrendBox">${libTrendInner()}</div></div>`;}
 function libEvents(){const u=me();const c=db.challenge;const studs=schoolStudents(u.schoolCode);
   const joined=c?studs.filter(s=>db.reports.some(r=>r.accId===s.id&&r.challengeId===c.id)).length:0;
   return `<div class="card"><h2>📅 이달의 책 · 학교 독서 행사 개설</h2><div class="sub">사서교사가 전교 대상 '이달의 책'을 지정하면 모든 학급 학생에게 표시되고, 챌린지 랭킹이 집계돼요.</div>
@@ -1174,7 +1177,7 @@ function sHome(){const u=me();const rs=accReports(u.id);const nx=[0,100,250,450,
      <div class="row" style="justify-content:space-between;font-size:11.5px;margin:8px 0 3px"><span style="font-weight:800;color:#7c3aed">🏆 독서 마스터 도달률</span><span style="font-weight:800;color:#7c3aed;font-variant-numeric:tabular-nums">${masterPct(u.points)}%</span></div>
      <div class="bar"><i style="width:${masterPct(u.points)}%;background:linear-gradient(90deg,#7c3aed,#2563eb)"></i></div>
     </div></div>
-    <div style="display:flex;flex-direction:column;gap:6px"><button class="btn" onclick="sGo('write')">✍️ 새 독후감</button><button class="btn out sm" onclick="printPortfolio(me().id)">📑 내 포트폴리오</button><button class="btn out sm" onclick="printHomeLetter(me().id)">📨 가정통신문</button></div></div>`+growthCard()+bookShelvesCard()+missionCard()+challengeCard()+`
+    <div style="display:flex;flex-direction:column;gap:6px"><button class="btn" onclick="sGo('write')">✍️ 새 독후감</button><button class="btn out sm" onclick="printPortfolio(me().id)">📑 내 포트폴리오</button><button class="btn out sm" onclick="printHomeLetter(me().id)">📨 가정통신문</button></div></div>`+growthCard()+keywordMapCard()+bookShelvesCard()+missionCard()+challengeCard()+`
   <div class="card"><h2>📚 내가 쓴 독후감</h2><div class="sub">제출한 글과 AI 첨삭을 다시 볼 수 있어요.</div>
     ${rs.length?rs.map(r=>`<div class="list-item"><span class="pill ${r.level}">${r.level}</span>
       <div style="flex:1"><div style="font-weight:700">${r.book} ${r.challengeId?'<span class="tag">🏅챌린지</span>':''}${r.missionId?'<span class="tag">🎯미션</span>':''}${r.improvement>0?`<span class="tag" style="color:#15803d">▲${r.improvement}</span>`:''}</div>
@@ -1442,8 +1445,10 @@ function openTrailer(idx){const b=BOOKS[idx];if(!b)return;const c=THEME[b.th]||[
      <div style="display:flex;gap:12px;align-items:flex-start;margin-bottom:10px">${cvUrl?`<img src="${cvUrl}" style="height:72px;border-radius:8px;box-shadow:var(--shadow);object-fit:cover;flex:none" onerror="this.remove()">`:''}<div><div style="font-weight:800;font-size:17px;color:#14264a;letter-spacing:-.02em">${b.t}</div>
      <div class="muted">${b.a} · ${b.th} · ${bandName(b.g)}</div></div></div>
      <p style="font-size:14px;color:#374151;line-height:1.65">${blurb}</p>
+     <div id="trReco"></div>
      <button class="btn block" style="margin-top:12px" onclick="closeModal();writeAboutBook(${idx})">✍️ 이 책으로 독후감 쓰기</button>
-   </div>`);}
+   </div>`);
+  fillTrailerReco(b.t);}
 const BOOKS=[
  {t:'강아지똥',a:'권정생',th:'성장',i:'🐕',g:'저'},{t:'사과가 쿵!',a:'다다 히로시',th:'저학년',i:'🍎',g:'저'},
  {t:'무지개 물고기',a:'마르쿠스 피스터',th:'우정',i:'🐟',g:'저'},{t:'구름빵',a:'백희나',th:'마음',i:'☁️',g:'저'},
@@ -1547,6 +1552,75 @@ setTimeout(async()=>{
   }
   _cvSave();
 },2000);
+/* ── 정보나루 활용: 연계추천·키워드지도·도서관트렌드 ── */
+const _libAnaCache={}; // 제목 → {keywords,coLoan,reco} 세션 캐시
+function _isbn13(raw){const m=String(raw||'').match(/97[89]\d{10}/);return m?m[0]:'';}
+async function libAnalysisByTitle(title){
+  if(_libAnaCache[title])return _libAnaCache[title];
+  try{
+    const r1=await fetch(`${FN_BASE}/booksearch?q=${encodeURIComponent(title)}&size=1`);
+    const j1=await r1.json();
+    const isbn=_isbn13((j1.books&&j1.books[0]&&j1.books[0].isbn)||'');
+    if(!isbn)return null;
+    const r2=await fetch(`${FN_BASE}/library?action=analysis&isbn=${isbn}`);
+    if(!r2.ok)return null;
+    const data=await r2.json();
+    _libAnaCache[title]=data;return data;
+  }catch(e){return null;}
+}
+/* 책 소개 모달 연계추천 렌더 */
+async function fillTrailerReco(title){
+  const host=document.getElementById('trReco');if(!host)return;
+  const d=await libAnalysisByTitle(title);
+  if(!host.isConnected)return; // 모달 닫힘
+  if(!d)return;
+  const kw=(d.keywords||[]).slice(0,6);
+  const seen=new Set(),books=[];
+  for(const b of (d.coLoan||[]).concat(d.reco||[])){const id=b.isbn||b.title;if(!b.title||seen.has(id))continue;seen.add(id);books.push(b);if(books.length>=8)break;}
+  let html='';
+  if(kw.length){html+=`<div style="margin-top:14px"><div style="font-weight:700;font-size:13px;color:#14264a;margin-bottom:6px">🔑 이 책의 키워드</div>
+    <div style="display:flex;flex-wrap:wrap;gap:6px">${kw.map(w=>`<span style="background:#eef4ff;color:#2f4d7a;border-radius:999px;padding:3px 10px;font-size:12px;font-weight:600">${dEsc(w)}</span>`).join('')}</div></div>`;}
+  if(books.length){html+=`<div style="margin-top:14px"><div style="font-weight:700;font-size:13px;color:#14264a;margin-bottom:6px">📚 이 책을 좋아하면 이런 책도!</div>
+    <div class="bookrow">${books.map(b=>`<div class="bookcell" title="${dEsc(b.title)} · ${dEsc(b.author)}">
+      ${b.cover?`<img src="${dEsc(b.cover)}" style="width:94px;height:126px;border-radius:8px;box-shadow:var(--shadow);object-fit:cover" onerror="this.style.display='none'">`:`<div style="width:94px;height:126px;border-radius:8px;background:linear-gradient(150deg,#94a3b8,#475569);box-shadow:var(--shadow)"></div>`}
+      <div class="bktitle">${dEsc(b.title)}</div><div class="bkauthor">${dEsc(b.author)}</div></div>`).join('')}</div></div>`;}
+  host.innerHTML=html;
+}
+/* 나의 독서 키워드 지도 (학생 홈) */
+function keywordMapCard(){
+  const u=me();const rs=accReports(u.id);
+  const freq={};
+  rs.forEach(r=>(r.keywords||[]).forEach(w=>{if(w)freq[w]=(freq[w]||0)+1;}));
+  const keys=Object.keys(freq).sort((a,b)=>freq[b]-freq[a]).slice(0,15);
+  if(keys.length<2)return '';
+  const mx=freq[keys[0]],mn=freq[keys[keys.length-1]];
+  return `<div class="card"><h2>🗺️ 나의 독서 키워드 지도</h2><div class="sub">내가 읽은 책들의 키워드예요. 많이 만난 주제일수록 크게 보여요.</div>
+    <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:6px 2px">${keys.map(w=>{const sz=mx===mn?16:Math.round(12+(freq[w]-mn)/(mx-mn)*8);return `<span style="font-size:${sz}px;font-weight:700;color:#2f4d7a">${dEsc(w)}</span>`;}).join('')}</div></div>`;
+}
+/* 전국 도서관 트렌드 (사서) — 6시간 캐시 */
+let _libTrend=(()=>{try{return JSON.parse(localStorage.getItem('_libTrend')||'null');}catch(e){return null;}})();
+async function loadLibTrend(){
+  if(_libTrend&&Date.now()-_libTrend.ts<21600000)return;
+  try{const r=await fetch(`${FN_BASE}/library?action=trend`);if(!r.ok)return;const d=await r.json();
+    _libTrend={ts:Date.now(),hot:d.hot||[],keywords:d.keywords||[]};
+    try{localStorage.setItem('_libTrend',JSON.stringify(_libTrend));}catch(e){}
+  }catch(e){}
+  const host=document.getElementById('libTrendBox');if(host)host.innerHTML=libTrendInner();
+}
+function libTrendInner(){
+  const t=_libTrend;
+  if(!t||(!t.hot.length&&!t.keywords.length))return '<div class="muted" style="font-size:13px">전국 도서관 트렌드를 불러오는 중…</div>';
+  const hot=(t.hot||[]).slice(0,5);
+  let h='';
+  if(hot.length){h+=`<div style="font-weight:700;font-size:13.5px;margin-bottom:6px">🚀 대출 급상승 Top 5</div>`;
+    h+=hot.map((b,i)=>`<div class="list-item"><div class="rank-no ${i<3?'r'+(i+1):''}">${i+1}</div>
+      <div style="flex:1"><div style="font-weight:700">${dEsc(b.title)}</div><div class="muted">${dEsc(b.author)}</div></div>
+      ${b.diff>0?`<span class="tag" style="color:#c2410c">+${b.diff}▲</span>`:''}</div>`).join('');}
+  const kw=(t.keywords||[]);
+  if(kw.length){h+=`<div style="font-weight:700;font-size:13.5px;margin:14px 0 6px">🏷️ 이달의 인기 키워드</div>
+    <div style="display:flex;flex-wrap:wrap;gap:6px">${kw.map(w=>`<span style="background:#eef4ff;color:#2f4d7a;border-radius:999px;padding:3px 10px;font-size:12px;font-weight:600">${dEsc(w)}</span>`).join('')}</div>`;}
+  return h;
+}
 /* ── 책 검색 (카카오/네이버 API, 서버 프록시) ── */
 let _bookSearchTimer=null;
 function bookSearchDebounce(inp){clearTimeout(_bookSearchTimer);const q=inp.value.trim();if(!q){hideDrop();return;}_bookSearchTimer=setTimeout(()=>bookSearchRun(q),400);}
@@ -1770,6 +1844,10 @@ function wordGameSubmit(w){const el=$('#wgIn');const v=(el&&el.value||'').trim()
 function saveReport(){const d=pendingSave;if(!d)return;const u=me();
   const imp=d.prevAvg!=null?Math.round((d.avg-d.prevAvg)*10)/10:0;
   db.reports.push({id:'r'+Date.now(),ts:Date.now(),accId:u.id,schoolCode:u.schoolCode,grade:u.grade,classNo:u.classNo,book:d.book||'(제목 없음)',body:d.body,input:d.input,level:d.level,rubric:d.rubric,avg:d.avg,date:'2026-06-29',reviewed:false,challengeId:d.challengeId||null,missionId:d.missionId||null,revisionOf:d.revisionOf||null,improvement:imp,sim:d.sim||0,photo:d.photo||null,drawing:d.drawing||null,audio:d.audio||null,bookCover:d.bookCover||null});
+  // 정보나루 키워드를 방금 저장한 독후감에 부착 (best-effort, 실패 무시)
+  (function(rep){const title=(d.book||'').replace(/[「」]/g,'').split(/[·]/)[0].trim();if(!title)return;
+    libAnalysisByTitle(title).then(a=>{if(a&&a.keywords&&a.keywords.length){rep.keywords=a.keywords.slice(0,12);save();}}).catch(()=>{});
+  })(db.reports[db.reports.length-1]);
   addWords(u,d.book,d.body);
   u.points+=d.pts;const nl=lvlOf(u.points);const up=nl>u.lvl;u.lvl=nl;
   const got=checkBadges(u);save();
